@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>test</title>
+</head>
+<body>
+    <a href="/log/?topn=10">Top 10</a>
+    <a href="/log/?topn=20">Top 20</a>
+    <a href="/log/?topn=30">Top 30</a>
+    <a href="/log/?topn=40">Top 40</a>
+    <table border="1">
+        <thead>
+        <tr>
+            <th>IP</th>
+            <th>URL</th>
+            <th>code</th>
+            <th>count</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for log in logs %}
+        <tr>
+            <td>{{log[0][0]}}</td>
+            <td>{{log[0][1]}}</td>
+            <td>{{log[0][2]}}</td>
+            <td>{{log[1]}}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+</table>
+</body>
