@@ -2,6 +2,7 @@
 import json
 import gconf
 
+#读出用户数据，并转换成列表返回
 def get_users():
     fh = open(gconf.USER_DATA_PATH, 'r')
     users = json.loads(fh.read())
@@ -9,6 +10,7 @@ def get_users():
     fh.close()
     return users
 
+#循环验证用户数据中用户及密码
 def validate_login(username, password):
     users = get_users()
     for user in users:
@@ -16,7 +18,7 @@ def validate_login(username, password):
             return user
     return None
 
-
+#分析log文件并返回倒数topn行
 def gethtml(src, topn=10):
     stat_dict = {}
     fhandler = open(src, "r")
@@ -30,3 +32,13 @@ def gethtml(src, topn=10):
     print(topn)
     return result[: -topn - 1:-1]
     print(topn)
+
+#将添加的用户信息写入到json文件中
+def user_create(username, password):
+    temp_user_all = get_users()
+    add_user = {"id":len(temp_user_all) + 1, "username":username, "password":password}
+    temp_user_all.append(add_user)
+    user_all = json.dumps(temp_user_all)
+    fh = open(gconf.USER_DATA_PATH, 'w')
+    fh.write(user_all)
+    fh.close
