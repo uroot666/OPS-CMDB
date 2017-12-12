@@ -33,10 +33,29 @@ def gethtml(src, topn=10):
     return result[: -topn - 1:-1]
     print(topn)
 
+def user_del(id):
+    users = get_users()
+    index = 0
+    for user_dict in users:
+        if user_dict.get('id') == id:
+            users.pop(index)
+            users = json.dumps(users)
+            fh = open(gconf.USER_DATA_PATH, 'w')
+            fh.write(users)
+            fh.close
+            return True, user_dict.get("username")
+        else:
+            index = index + 1
+    return None
+
+
+def user_edit(id):
+    pass
+
 #将添加的用户信息写入到json文件中
 def user_create(username, password):
     temp_user_all = get_users()
-    add_user = {"id":len(temp_user_all) + 1, "username":username, "password":password}
+    add_user = {"id":temp_user_all[len(temp_user_all) - 1].get('id') + 1, "username":username, "password":password}
     temp_user_all.append(add_user)
     user_all = json.dumps(temp_user_all)
     fh = open(gconf.USER_DATA_PATH, 'w')

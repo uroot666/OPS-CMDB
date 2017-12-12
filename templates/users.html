@@ -5,12 +5,19 @@
     <title>users list</title>
 </head>
 <body>
+    {% if username %}
+        <span style="color:red">{{username}},delete ok</span><br>
+    {% endif %}
+    {% if error %}
+        <span style="color:red">{{username}},delete error</span><br>
+    {% endif %}
     <table border="1">
         <thead>
         <tr>
             <th>ID</th>
             <th>username</th>
             <th>password</th>
+            <th>operating</th>
         </tr>
         </thead>
         <tbody>
@@ -19,6 +26,7 @@
             <td>{{user.get("id")}}</td>
             <td>{{user.get("username")}}</td>
             <td>{{user.get("password")}}</td>
+            <td><a href="/user/delete/?id={{user.get("id")}}">delete</a>|<a href="/user/view/?id={{user.get("id")}}">edit</a></td>
         </tr>
         {% endfor %}
         </tbody>

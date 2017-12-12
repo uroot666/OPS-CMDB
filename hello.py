@@ -30,8 +30,7 @@ def login():
 #显示所有用户信息
 @app.route('/users/')
 def users():
-    user_all = model.get_users()
-    print(user_all)    
+    user_all = model.get_users()   
     return render_template("users.html", user_all=user_all)
 
 #添加用户信息表单页面
@@ -49,6 +48,21 @@ def user_create():
     else:
         model.user_create(username, password)
         return 'user create %s yes' % username
+
+@app.route('/user/delete/')
+def userdel():
+    id = int(request.args.get('id', ''))
+    code, username = model.user_del(id)
+    print(code, username)
+    user_all = model.get_users()
+    if code:
+        return render_template('users.html', username=username, user_all=user_all)
+    else:
+        return render_template('users.html', error='error', username=username, user_all=user_all)
+
+@app.route('/user/view/')
+def userview():
+    pass
 
 #查询分析日志的结果表单页面
 @app.route('/log/')
