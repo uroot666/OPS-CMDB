@@ -49,8 +49,23 @@ def user_del(id):
     return None
 
 
-def user_edit(id):
-    pass
+def userEditSave(id, username, password):
+    users = get_users()
+    index = 0
+    for user_dict in users:
+        if user_dict.get('id') == id:
+            users[index]["username"] = username
+            users[index]["password"] = password
+            fh = open(gconf.USER_DATA_PATH, 'w')
+            users = json.dumps(users)
+            fh.write(users)
+            fh.close
+            return True
+        else:
+            index = index + 1
+    return  None
+    
+
 
 #将添加的用户信息写入到json文件中
 def user_create(username, password):
