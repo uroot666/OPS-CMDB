@@ -7,11 +7,11 @@
 <body>
     <!-- 用于删除用户成功后显示 -->
     {% if username %}
-        <span style="color:red">{{username}},delete ok</span><br>
+        <span style="color:red">delete ok</span><br>
     {% endif %}
     <!-- 用于删除用户失败后显示 -->
     {% if error %}
-        <span style="color:red">{{username}},delete error</span><br>
+        <span style="color:red">delete error</span><br>
     {% endif %}
     <!-- 用于添加用户成功后显示 -->
     {% if create_username %}
@@ -22,6 +22,7 @@
         <tr>
             <th>ID</th>
             <th>username</th>
+            <th>age</th>
             <th>password</th>
             <th>operating</th>
         </tr>
@@ -31,8 +32,9 @@
         <tr>
             <td>{{user.get("id")}}</td>
             <td>{{user.get("username")}}</td>
-            <td>{{user.get("password")}}</td>
-            <td><a href="/user/delete/?id={{user.get("id")}}">delete</a>|<a href="/user/view/?id={{user.get("id")}}&username={{user.get("username")}}">edit</a></td>
+            <td>{{user.get("age")}}</td>
+            <td>******</td>            
+            <td><a href="/user/delete/?id={{user.get("id")}}">delete</a>|<a href="/user/view/?id={{user.get("id")}}">edit</a></td>
         </tr>
         {% endfor %}
         </tbody>

@@ -7,10 +7,10 @@
 <body>
     edit user:
     <form action="/user/view_save/" method="">
-        <label>id:</label><input type="text" name="id" value="{{id}}"/>
+        <input type="hidden" name="uid" value="{{uid}}" />
         <label>user:</label><input type="text" name="username" value="{{username}}"/>
-        <label>Password:</label><input type="password" name="password" value="password" />
-        <input type="submit" value="create" />
+        <label>age:</label><input type="text" name="age" value="{{age}}" />
+        <input type="submit" value="save" />
     </form>
 </body>
 </html>
