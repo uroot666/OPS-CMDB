@@ -9,8 +9,16 @@
         {% if error %}
             <span style="color:red">{{error}}</span><br>
         {% endif %}
-        <label>user:</label><input type="text" name="username" value="{{username}}"/>
-        <label>Password:</label><input type="password" name="password" value="{{password}}"/>
+        <label>user:</label><input type="text" name="username" value="{{username}}"/><br/>
+        <label>Password:</label><input type="password" name="password" value="{{password}}"/><br/>
+        <laber>部门</laber>
+        <select name="department">
+            <option value="1">研发部门</option>
+            <option value="2">测试部门</option>
+            <option value="3" selected="selected">运维部门  </option>
+        </select><br/>
+        <input type="radio" name="sex" value="1" checked="checked"/>男
+        <input type="radio" name="sex" value="0"/>女<br/>
         <input type="submit" value="login" />
     </form>
 </body>

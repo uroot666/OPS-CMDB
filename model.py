@@ -2,7 +2,7 @@
 import json
 import gconf
 import pymysql
-import config
+import dbutils
 
 #sql template
 SQL_VALIDATE_LOGIN = 'select id,name from user where name = %s and password = md5(%s)'
@@ -17,13 +17,16 @@ SQL_USER_CREATE = 'insert into user(name, password, age) value( %s, md5(%s), %s)
 
 #读出用户数据，并转换成列表返回
 def get_users():
-    db = pymysql.connect(**config.config)
-    cursor = db.cursor()
-    cursor.execute(SQL_USER_LIST)
-    users = cursor.fetchall()
-    cursor.close()
-    db.close()
+    cnt, users = dbutils.db_operating(SQL_USER_LIST, True)
     return [dict(zip(SQL_USER_LIST_COLUMS, user)) for user in users]
+    # db = pymysql.connect(**config.config)
+    # cursor = db.cursor()
+    # cursor.execute(SQL_USER_LIST)
+    # users = cursor.fetchall()
+    # cursor.close()
+    # db.close()
+    # return [dict(zip(SQL_USER_LIST_COLUMS, user)) for user in users]
+
 
     # fh = open(gconf.USER_DATA_PATH, 'r')
     # users = json.loads(fh.read())
@@ -33,13 +36,18 @@ def get_users():
 
 # 查询数据库比对用户密码
 def validate_login(username, password):
-    db = pymysql.connect(**config.config)
-    cursor = db.cursor()
-    cursor.execute(SQL_VALIDATE_LOGIN,(username, password ))
-    record = cursor.fetchone()
-    cursor.close()
-    db.close()
-    return  dict(zip(SQL_VALIDATE_LOGIN_COLUMS, record)) if record else None
+    cnt, record = dbutils.db_operating(SQL_VALIDATE_LOGIN, True, (username, password))
+    if len(record) != 0:
+        record = record[0]
+    return dict(zip(SQL_VALIDATE_LOGIN_COLUMS, record)) if record else None
+
+    # db = pymysql.connect(**config.config)
+    # cursor = db.cursor()
+    # cursor.execute(SQL_VALIDATE_LOGIN,(username, password ))
+    # record = cursor.fetchone()
+    # cursor.close()
+    # db.close()
+    # return  dict(zip(SQL_VALIDATE_LOGIN_COLUMS, record)) if record else None
     
     # 循环验证用户数据中用户及密码
     # users = get_users()
@@ -49,13 +57,18 @@ def validate_login(username, password):
     # return None
 
 def get_user_by_id(uid):
-    db = pymysql.connect(**config.config)
-    cursor = db.cursor()
-    cursor.execute(SQL_GET_USER_BY_ID,(uid,))
-    record = cursor.fetchone()
-    cursor.close()
-    db.close()
+    cnt, record = dbutils.db_operating(SQL_GET_USER_BY_ID, True, (uid,))
+    if len(record) != 0:
+        record = record[0]
     return  dict(zip(SQL_GET_USER_BY_ID_COLUMS, record)) if record else {}
+
+    # db = pymysql.connect(**config.config)
+    # cursor = db.cursor()
+    # cursor.execute(SQL_GET_USER_BY_ID,(uid,))
+    # record = cursor.fetchone()
+    # cursor.close()
+    # db.close()
+    # return  dict(zip(SQL_GET_USER_BY_ID_COLUMS, record)) if record else {}
 
 #分析log文件并返回倒数topn行
 def gethtml(src, topn=10):
@@ -73,13 +86,15 @@ def gethtml(src, topn=10):
     print(topn)
 
 def user_del(uid):
-    db = pymysql.connect(**config.config)
-    cursor = db.cursor()
-    cursor.execute(SQL_USER_DELETE,(uid,))
-    db.commit()
-    cursor.close()
-    db.close()
+    dbutils.db_operating(SQL_USER_DELETE, False, (uid,))
     return True
+    # db = pymysql.connect(**config.config)
+    # cursor = db.cursor()
+    # cursor.execute(SQL_USER_DELETE,(uid,))
+    # db.commit()
+    # cursor.close()
+    # db.close()
+    # return True
 
     # users = get_users()
     # index = 0
@@ -99,13 +114,16 @@ def user_edit_jud(id, username, age):
     return True
 
 def user_edit_save(id, username, age):
-    db = pymysql.connect(**config.config)
-    cursor = db.cursor()
-    cursor.execute(SQL_USER_EDIT_SAVE,(username, age, id))
-    db.commit()
-    cursor.close()
-    db.close()
+    dbutils.db_operating(SQL_USER_EDIT_SAVE, False, (username, age, id))
     return True
+
+    # db = pymysql.connect(**config.config)
+    # cursor = db.cursor()
+    # cursor.execute(SQL_USER_EDIT_SAVE,(username, age, id))
+    # db.commit()
+    # cursor.close()
+    # db.close()
+    # return True
 
     # users = get_users()
     # index = 0
@@ -126,12 +144,16 @@ def user_edit_save(id, username, age):
 
 #将添加的用户信息写入到json文件中
 def user_create(username, password, age):
-    db = pymysql.connect(**config.config)
-    cursor = db.cursor()
-    cursor.execute(SQL_USER_CREATE,(username, password, age))
-    db.commit()
-    cursor.close()
-    db.close()
+    dbutils.db_operating(SQL_USER_CREATE, False, (username, password, age))
+
+    # db = pymysql.connect(**config.config)
+    # cursor = db.cursor()
+    # cursor.execute(SQL_USER_CREATE,(username, password, age))
+    # db.commit()
+    # cursor.close()
+    # db.close()
+
+
     # temp_user_all = get_users()
     # add_user = {"id":temp_user_all[len(temp_user_all) - 1].get('id') + 1, "username":username, "password":password}
     # temp_user_all.append(add_user)
