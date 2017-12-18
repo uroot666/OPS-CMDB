@@ -18,12 +18,12 @@ def index():
     return render_template('index.html')
 
 # 登录并跳转
-@app.route('/login/')
+@app.route('/login/', methods=["POST"])
 def login():
     if session.get('user'):
         return redirect('/users/')
-    username = request.args.get('username', '')
-    password = request.args.get('password', '')
+    username = request.form.get('username', '')
+    password = request.form.get('password', '')
     user = model.validate_login(username, password)
     print(user)
     if user:
@@ -48,13 +48,15 @@ def user_add():
     return render_template('user_create.html')
 
 # 保存添加用户
-@app.route('/user/create/')
+@app.route('/user/create/', methods=["POST"])
 def user_create():
     if session.get('user') is None:
         return redirect('/')
-    username = request.args.get('username', '')
-    password = request.args.get('password', '')
-    age = int(request.args.get('age', ''))
+    username = request.form.get('username', '')
+    password = request.form.get('password', '')
+    age = int(request.form.get('age', ''))
+    print(request.form.get('username'))
+    print(request.form.getlist('hobby'))
     if username == '' or password == '':
         return 'user create error'
     else:
@@ -115,5 +117,8 @@ def logout():
     session.clear()
     return redirect('/')
 
+@app.route("/static/")
+def test():
+    return render_template('index.html')
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=10000, debug=True)
