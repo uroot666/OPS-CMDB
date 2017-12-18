@@ -3,13 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <title>user create</title>
+    <link  rel="stylesheet" type="text/css" href="/static/user_create.css" />
 </head>
 <body>
-    create user:
-    <form action="/user/create/" method="">
-        <label>user:</label><input type="text" name="username" value="{{username}}"/>
-        <label>Password:</label><input type="password" name="password" value="{{password}}"/>
-        <label>age:</label><input type="text" name="age" value="{{age}}"/>        
+    <span>create user</span><br/>
+    <div class=circle>div test</div>
+    <div id="myid">div test2</div>
+    <form action="/user/create/" method="post">
+        <label>user:</label><input type="text" name="username" value="{{username}}"/><br/>
+        <label>Password:</label><input type="password" name="password" value="{{password}}"/><br/>
+        <label>age:</label><input type="text" name="age" value="{{age}}"/><br/>
+
+        <label>性别:</label>
+        <input type="radio" name="sex" value="1" checked="checked" />男
+        <input type="radio" name="sex" value="0" />女
+        <br/>
+
+        <label>爱好</label>
+        <input type="checkbox" name="hobby" value="football"/>足球
+        <input type="checkbox" name="hobby" value="basketball" checked="checked"/>篮球
+        <input type="checkbox" name="hobby" value="pingpong" checked="checked" />乒乓球
+        <br/>
+
+        <label>简介</label>
+        <textarea name="detail">XXXXX</textarea>
+        <br/>
+
+        <label>头像</label>
+        <input type="file" name="icon" />
+        <br/>
+        <laber>主页</laber>
+        <input type="url" name="homepage" value=""/><br/>
+        <label>生日</label>
+        <input type="date" name="birthday" value=""/><br/>
+        <label>邮箱</label>
+        <input type="email" name="email" value=""/><br/>
+        <img src="http://img95.699pic.com/photo/50035/0520.jpg_wh300.jpg"/>      
         <input type="submit" value="create" />
     </form>
 </body>
