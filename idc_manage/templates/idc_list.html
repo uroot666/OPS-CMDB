@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>engineroom list</title>
+</head>
+<body>
+    <table border="1">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>机房</th>
+            <th>地区</th>
+            <th>IP段</th>
+            <th>机器数量</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for engineroom in engineroom_all %}
+        <tr>
+            <td>{{engineroom.get("id")}}</td>
+            <td>{{engineroom.get("idcname")}}</td>
+            <td>{{engineroom.get("area")}}</td>
+            <td>{{engineroom.get("ip_segment")}}</td>
+            <td>{{engineroom.get("engineroom_number")}}</td>      
+            <td><a href="/idc/view/?id={{engineroom.get("id")}}">edit</a></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+</table>
+</body>
