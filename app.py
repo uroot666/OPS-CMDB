@@ -25,7 +25,6 @@ def login():
     username = request.form.get('username', '')
     password = request.form.get('password', '')
     user = model.validate_login(username, password)
-    print(user)
     if user:
         session['user'] = user
         return redirect('/users/')
