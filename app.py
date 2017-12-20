@@ -30,7 +30,7 @@ def login():
         session['user'] = user
         return redirect('/users/')
     else:
-        return render_template('index.html', username=username,  error='username of password for error')
+        return render_template('index.html', username=username,  error='用户或密码错误')
 
 # 显示所有用户信息
 @app.route('/users/')

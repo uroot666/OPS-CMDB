@@ -1,32 +1,49 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <meta charset="UTF-8">
-    <title>test</title>
+    <title>日志展示</title>
 </head>
 <body>
-    <a href="/log/?topn=10">Top 10</a>
-    <a href="/log/?topn=20">Top 20</a>
-    <a href="/log/?topn=30">Top 30</a>
-    <a href="/log/?topn=40">Top 40</a>
-    <table border="1">
-        <thead>
-        <tr>
-            <th>IP</th>
-            <th>URL</th>
-            <th>code</th>
-            <th>count</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for log in logs %}
-        <tr>
-            <td>{{log[0][0]}}</td>
-            <td>{{log[0][1]}}</td>
-            <td>{{log[0][2]}}</td>
-            <td>{{log[1]}}</td>
-        </tr>
-        {% endfor %}
-        </tbody>
-</table>
+    <div class="container-fluid"><h1>日志展示</h1></div>
+    <div class="container-fluid">
+        <div class="col-md-12">
+            <a href="/log/?topn=10" class="btn btn-default btn-lg active" role="button">TOP10</a>
+            <a href="/log/?topn=20" class="btn btn-default btn-lg active" role="button">TOP20</a>
+            <a href="/log/?topn=30" class="btn btn-default btn-lg active" role="button">TOP30</a>
+            <a href="/log/?topn=40" class="btn btn-default btn-lg active" role="button">TOP40</a>
+    
+        </div>
+    </div>
+    <br/>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6">    
+                <table class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th >访问IP</th>
+                        <th>URL</th>
+                        <th>code</th>
+                        <th>次数</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for log in logs %}
+                    <tr class="success">
+                        <td>{{log[0][0]}}</td>
+                        <td>{{log[0][1]}}</td>
+                        <td>{{log[0][2]}}</td>
+                        <td>{{log[1]}}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div> 
 </body>
+<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>

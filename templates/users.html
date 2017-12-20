@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <meta charset="UTF-8">
     <title>users list</title>
 </head>
@@ -17,26 +19,37 @@
     {% if create_username %}
     <span style="color:red">{{create_username}},create ok</span><br>
 {% endif %}
-    <table border="1">
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>username</th>
-            <th>age</th>
-            <th>password</th>
-            <th>operating</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for user in user_all %}
-        <tr>
-            <td>{{user.get("id")}}</td>
-            <td>{{user.get("username")}}</td>
-            <td>{{user.get("age")}}</td>
-            <td>******</td>            
-            <td><a href="/user/delete/?id={{user.get("id")}}">delete</a>|<a href="/user/view/?id={{user.get("id")}}">edit</a></td>
-        </tr>
-        {% endfor %}
-        </tbody>
-</table>
+    <div class="container-fluid">
+        用户信息展示
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6">
+                <table class="table table-bordered table-striped" >
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>username</th>
+                        <th>age</th>
+                        <th>password</th>
+                        <th>operating</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for user in user_all %}
+                    <tr>
+                        <td>{{user.get("id")}}</td>
+                        <td>{{user.get("username")}}</td>
+                        <td>{{user.get("age")}}</td>
+                        <td>******</td>            
+                        <td><a href="/user/delete/?id={{user.get("id")}}">delete</a>|<a href="/user/view/?id={{user.get("id")}}">edit</a></td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </body>
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
