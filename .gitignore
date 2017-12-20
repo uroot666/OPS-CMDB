@@ -1,2 +1,7 @@
 idc_manage/config.py
 config.py
+__pycache__/config.cpython-36.pyc
+__pycache__/dbutils.cpython-36.pyc
+__pycache__/gconf.cpython-36.pyc
+__pycache__/model.cpython-36.pyc
+__pycache__
