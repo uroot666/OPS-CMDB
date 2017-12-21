@@ -31,11 +31,7 @@
                             <span class="clear"> <span class="block m-t-xs"> <strong class="font-bold">{{session['user']['name']}}</strong>
                              </span> </span> </a>
                     <ul class="dropdown-menu animated fadeInRight m-t-xs">
-                        <li><a href="profile.html">Profile</a></li>
-                        <li><a href="contacts.html">Contacts</a></li>
-                        <li><a href="mailbox.html">Mailbox</a></li>
-                        <li class="divider"></li>
-                        <li><a href="login.html">Logout</a></li>
+                        <li><a href="/logout/">Logout</a></li>
                     </ul>
                 </div>
                 <div class="logo-element">
@@ -52,9 +48,9 @@
                 <a href="layouts.html"><i class="fa fa-diamond"></i> <span class="nav-label">Layouts</span></a>
             </li>
             <li class="active">
-                <a href="index.html"><i class="fa fa-user"></i> <span class="nav-label">用户</span> <span class="fa arrow"></span></a>
+                <a href="/users/"><i class="fa fa-user"></i> <span class="nav-label">用户</span> <span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse">
-                    <li class="active"><a href="index.html">用户管理</a></li>
+                    <li class="active"><a href="/users/">用户管理</a></li>
                 </ul>
             </li>
         </ul>
@@ -124,20 +120,20 @@
         <table class="table table-bordered table-condensed  table-striped">
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>用户名</th>
                     <th>年龄</th>
                     <th>密码</th>
+                    <th>邮箱</th>
                     <th>操作</th>
                 </tr>
             </thead>
             <tbody>
                 {% for user in user_all %}
                 <tr>
-                    <td>{{user.get("id")}}</td>
                     <td>{{user.get("username")}}</td>
                     <td>{{user.get("age")}}</td>
-                    <td>******</td>            
+                    <td>******</td>  
+                    <td>{{user.get("email")}}</td>          
                     <td><a href="/user/view/?id={{user.get("id")}}">编辑</a> | <a href="/user/delete/?id={{user.get("id")}}">删除</a></td>
                 </tr>
                 {% endfor %}

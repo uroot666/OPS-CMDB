@@ -53,13 +53,12 @@ def user_create():
         return redirect('/')
     username = request.form.get('username', '')
     password = request.form.get('password', '')
+    email = request.form.get('email', '')
     age = int(request.form.get('age', ''))
-    print(request.form.get('username'))
-    print(request.form.getlist('hobby'))
     if username == '' or password == '':
         return 'user create error'
     else:
-        model.user_create(username, password, age)
+        model.user_create(username, password, age, email)
         user_all = model.get_users()
         return render_template('users.html', create_username=username, user_all=user_all)
 
@@ -82,7 +81,7 @@ def user_view():
     if session.get('user') is None:
         return redirect('/')
     user = model.get_user_by_id(request.args.get('id', 0))
-    return render_template('user_view.html', uid=user.get("uid"), username=user.get("username"), age=user.get("age"))
+    return render_template('user_view.html', uid=user.get("uid"), username=user.get("username"), age=user.get("age"), email=user.get("email"))
 
 # 保存修改的用户信息
 @app.route('/user/view_save/')
@@ -92,12 +91,13 @@ def user_view_save():
     uid = int(request.args.get('uid'))
     username = request.args.get('username')
     age = request.args.get('age')
+    email = request.args.get('email')
     ok = model.user_edit_jud(uid, username, age)
     if ok:
-        model.user_edit_save(uid, username, age)
+        model.user_edit_save(uid, username, email, age)
         return redirect('/users/')
     else:
-        return render_template('user_view.html', uid=uid, username=username, age=age, error=error)
+        return render_template('user_view.html', uid=uid, username=username, age=age, email=email, error=error)
 
 
 #查询分析日志的结果表单页面

@@ -7,13 +7,13 @@ import dbutils
 #sql template
 SQL_VALIDATE_LOGIN = 'select id,name from user where name = %s and password = md5(%s)'
 SQL_VALIDATE_LOGIN_COLUMS = ("id", "name")
-SQL_USER_LIST = 'select id, name, age from user'
-SQL_USER_LIST_COLUMS = ("id", "username", "age")
-SQL_GET_USER_BY_ID = 'select id,name,age from user where id = %s'
-SQL_GET_USER_BY_ID_COLUMS = ("uid", "username", "age")
-SQL_USER_EDIT_SAVE = 'update user set name = %s, age = %s where id = %s'
+SQL_USER_LIST = 'select id, name, age, email from user'
+SQL_USER_LIST_COLUMS = ("id", "username", "age", "email")
+SQL_GET_USER_BY_ID = 'select id,name,age,email from user where id = %s'
+SQL_GET_USER_BY_ID_COLUMS = ("uid", "username", "age", "email")
+SQL_USER_EDIT_SAVE = 'update user set name = %s, age = %s, email = %s where id = %s'
 SQL_USER_DELETE = 'delete from user where id = %s'
-SQL_USER_CREATE = 'insert into user(name, password, age) value( %s, md5(%s), %s)'
+SQL_USER_CREATE = 'insert into user(name, password, age, email) value( %s, md5(%s), %s, %s)'
 
 #读出用户数据，并转换成列表返回
 def get_users():
@@ -113,8 +113,8 @@ def user_del(uid):
 def user_edit_jud(id, username, age):
     return True
 
-def user_edit_save(id, username, age):
-    dbutils.db_operating(SQL_USER_EDIT_SAVE, False, (username, age, id))
+def user_edit_save(id, username, email, age):
+    dbutils.db_operating(SQL_USER_EDIT_SAVE, False, (username, age, email, id))
     return True
 
     # db = pymysql.connect(**config.config)
@@ -143,8 +143,8 @@ def user_edit_save(id, username, age):
 
 
 #将添加的用户信息写入到json文件中
-def user_create(username, password, age):
-    dbutils.db_operating(SQL_USER_CREATE, False, (username, password, age))
+def user_create(username, password, age, email):
+    dbutils.db_operating(SQL_USER_CREATE, False, (username, password, age, email))
 
     # db = pymysql.connect(**config.config)
     # cursor = db.cursor()
