@@ -14,7 +14,7 @@ def db_operating(sql, if_fach,args=()):
         else:
             db.commit()
     except BaseException as e:
-        print('db error')
+        print('db connect error')
     finally:
         cursor.close()
         db.close()
