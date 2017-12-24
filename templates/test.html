@@ -4,25 +4,71 @@
         <meta charset="utf-8"/>
     </head>
     <body>
+        <input type='text' value='' id='a'/> +
+        <input type='text' value='' id='b'/> =
+        <input type='text' value='' id='c'/> 
+        <input type="button" value="a+b=?" onclick="add();"/>
+        <div>div1</div>
+        <div id="mydivid">div1</div>
+        <div class="mydivclass">div1</div>
         <!-- body content -->
         <script type="text/javascript">
-            var name = 'uroot';
-            false;
-            false || true;
-            false && true;
-            null;
-            var num = 4;
-            if (num > 5) {
-                console.log('> 5');
-                }
-            else if (num > 3){
-                console.log(' 3< num < 5')
-                }
-            else {
-                console.log('< 3')
+        // console.log(document.getElementById('mydivid'))
+        // console.log(document.getElementsByClassName('mydivclass'))
+        // console.log(document.getElementsByTagName('div'))
+        function add(){
+            var a = document.getElementById('a').value;
+            var b = document.getElementById('b').value;
+            if (isNaN(a) || isNaN(b)){
+                console.log('return');
+                return;
             }
-            
+            document.getElementById("c").value = parseInt(a)+parseInt(b)
+            console.log('add');
+        }
+            // var name = 'uroot';
+            // false;
+            // false || true;
+            // false && true;
+            // null;
+            // var num = 0;
+            // if (num > 5){
+            //     console.log('num > 5')
+            // }
+            // else if (num > 3){
+            //     console.log('num > 3 and num < 5')
+            // }
+            // else{
+            //     console.log('num < 3')
+            // }
 
+            // while (num < 7){
+            //     console.log(num)
+            //     num = num + 1
+            // }
+
+            // for (var num = 0; num < 5; num += 1){
+            //     console.log(num)
+            // }
+
+            // function print_hello(){
+            //     console.log('hello')
+            // }
+            // print_hello()
+
+            // function print_hello_input(name){
+            //     console.log('hello,' + name)
+            // }
+            // print_hello_input('test')
+
+            // function add(n, m){
+            //     return n + m
+            // }
+            // console.log(add(1, 2))
+            // var cmp = function(x, y){
+            //     return x > y;
+            // }
+            // console.log(cmp(1, 2))
         </script>
     </body>
 </html>
