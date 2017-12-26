@@ -7,6 +7,7 @@ from flask import redirect
 from flask import session
 
 import model
+import json
 
 app = Flask(__name__)
 app.secret_key = "\xc5T|\xc9\x1b6\x8c\xef(\xc6\xfd\x86S\x82b\x19)\xcdg\x1c3Mf\x93z|Bk"
@@ -54,13 +55,14 @@ def user_create():
     username = request.form.get('username', '')
     password = request.form.get('password', '')
     email = request.form.get('email', '')
-    age = int(request.form.get('age', ''))
-    if username == '' or password == '':
-        return 'user create error'
+    age = request.form.get('age', '')
+    if username == '' or password == '' or age == '':
+        return json.dumps({'code' : 400, 'error' : 'error'})
+
     else:
-        model.user_create(username, password, age, email)
-        user_all = model.get_users()
-        return render_template('users.html', create_username=username, user_all=user_all)
+        model.user_create(username, password, int(age), email)
+        return json.dumps({'code' : 200})
+
 
 # 删除用户
 @app.route('/user/delete/')

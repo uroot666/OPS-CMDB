@@ -13,6 +13,8 @@
 
     <link href="/static/css/animate.css" rel="stylesheet">
     <link href="/static/css/style.css" rel="stylesheet">
+    {% block link %}{% endblock %}
+    {% block styly %}{% endblock %}
 
 </head>
 
@@ -134,8 +136,10 @@
 <script src="/static/js/plugins/pace/pace.min.js"></script>
 
 <script src="/static/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
-
-
+{% block script %}{% endblock %}
+<script>
+{% block js %}{% endblock %}
+</script>
 <script>
     $(document).ready(function(){
 

@@ -7,24 +7,28 @@
         <input type='text' value='' id='a'/> +
         <input type='text' value='' id='b'/> =
         <input type='text' value='' id='c'/> 
-        <input type="button" value="a+b=?" onclick="add();"/>
+        <input type='button' value='a+b=?' onclick='add();'/>
+        <input type='button' value='jquery a+b=?' class='calc_btn'/>
         <div>div1</div>
         <div id="mydivid">div1</div>
         <div class="mydivclass">div1</div>
         <!-- body content -->
+        <script type="text/javascript" src="../static/js/jquery-2.1.1.js"></script>
         <script type="text/javascript">
         // console.log(document.getElementById('mydivid'))
         // console.log(document.getElementsByClassName('mydivclass'))
         // console.log(document.getElementsByTagName('div'))
+        jQuery('.calc_btn').on('click', function(){
+            jQuery('#c').val(parseInt(jQuery('#a').val()) + parseInt(jQuery('#b').val()));
+        })
+
         function add(){
             var a = document.getElementById('a').value;
             var b = document.getElementById('b').value;
             if (isNaN(a) || isNaN(b)){
-                console.log('return');
                 return;
             }
-            document.getElementById("c").value = parseInt(a)+parseInt(b)
-            console.log('add');
+            document.getElementById('c').value = parseInt(a) + parseInt(b);
         }
             // var name = 'uroot';
             // false;
