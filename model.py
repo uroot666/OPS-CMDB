@@ -17,7 +17,7 @@ SQL_USER_CREATE = 'insert into user(name, password, age, email) value( %s, md5(%
 
 #读出用户数据，并转换成列表返回
 def get_users():
-    cnt, users = dbutils.db_operating(SQL_USER_LIST, True)
+    cnt, users = dbutils.user_db_operating(SQL_USER_LIST, True)
     return [dict(zip(SQL_USER_LIST_COLUMS, user)) for user in users]
     # db = pymysql.connect(**config.config)
     # cursor = db.cursor()
@@ -36,7 +36,7 @@ def get_users():
 
 # 查询数据库比对用户密码
 def validate_login(username, password):
-    cnt, record = dbutils.db_operating(SQL_VALIDATE_LOGIN, True, (username, password))
+    cnt, record = dbutils.user_db_operating(SQL_VALIDATE_LOGIN, True, (username, password))
     if len(record) != 0:
         record = record[0]
     return dict(zip(SQL_VALIDATE_LOGIN_COLUMS, record)) if record else None
@@ -57,7 +57,7 @@ def validate_login(username, password):
     # return None
 
 def get_user_by_id(uid):
-    cnt, record = dbutils.db_operating(SQL_GET_USER_BY_ID, True, (uid,))
+    cnt, record = dbutils.user_db_operating(SQL_GET_USER_BY_ID, True, (uid,))
     if len(record) != 0:
         record = record[0]
     return  dict(zip(SQL_GET_USER_BY_ID_COLUMS, record)) if record else {}
@@ -86,7 +86,7 @@ def gethtml(src, topn=10):
     print(topn)
 
 def user_del(uid):
-    dbutils.db_operating(SQL_USER_DELETE, False, (uid,))
+    dbutils.user_db_operating(SQL_USER_DELETE, False, (uid,))
     return True
     # db = pymysql.connect(**config.config)
     # cursor = db.cursor()
@@ -114,7 +114,7 @@ def user_edit_jud(id, username, age):
     return True
 
 def user_edit_save(id, username, email, age):
-    dbutils.db_operating(SQL_USER_EDIT_SAVE, False, (username, age, email, id))
+    dbutils.user_db_operating(SQL_USER_EDIT_SAVE, False, (username, age, email, id))
     return True
 
     # db = pymysql.connect(**config.config)
@@ -144,7 +144,7 @@ def user_edit_save(id, username, email, age):
 
 #将添加的用户信息写入到json文件中
 def user_create(username, password, age, email):
-    dbutils.db_operating(SQL_USER_CREATE, False, (username, password, age, email))
+    dbutils.user_db_operating(SQL_USER_CREATE, False, (username, password, age, email))
 
     # db = pymysql.connect(**config.config)
     # cursor = db.cursor()

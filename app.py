@@ -5,9 +5,11 @@ from flask import render_template
 from flask import request
 from flask import redirect
 from flask import session
+import json
+import re
 
 import model
-import json
+import idc_model
 
 app = Flask(__name__)
 app.secret_key = "\xc5T|\xc9\x1b6\x8c\xef(\xc6\xfd\x86S\x82b\x19)\xcdg\x1c3Mf\x93z|Bk"
@@ -73,7 +75,7 @@ def userdel():
     jud = model.user_del(id)
     user_all = model.get_users()
     if jud:
-        return render_template('users.html', user_all=user_all)
+        return redirect('/users/')
     else:
         return render_template('users.html', error='error', user_all=user_all)
 
@@ -121,5 +123,56 @@ def logout():
 @app.route("/static/")
 def test():
     return render_template('index.html')
+
+
+############################# idc 管理 #############################
+@app.route("/idc_list/")
+def idc_list():
+    engineroom_all = idc_model.engineroom_list()
+    return render_template('idc_list.html', engineroom_all=engineroom_all)
+
+@app.route("/idc/add/")
+def idc_add():
+    return render_template('idc_create.html')
+
+@app.route("/idc/add_save/", methods=["POST"])
+def idc_add_save():
+    idcname = request.form.get('idcname', '')
+    area = request.form.get('area', '')
+    ip_segment = request.form.get('ip_segment', '')
+    machine_number = request.form.get('machine_number', '')
+    if idcname == '' or area == '' or ip_segment == '' or machine_number == '':
+        return json.dumps({'code' : 400})
+    else:
+        idc_model.idc_add_save(idcname, area, ip_segment, int(machine_number))
+        return json.dumps({'code':200})
+
+@app.route("/idc/view/")
+def idc_view():
+    idcid = int(request.args.get('id'))
+    idc_tails = idc_model.idc_tails_get(idcid)
+    idcname = idc_tails.get("idcname")
+    area = idc_tails.get("area")
+    ip_segment = idc_tails.get("ip_segment")
+    machine_number = idc_tails.get("engineroom_number")
+    return render_template('idc_view.html', idcid=idcid, idcname=idcname, ip_segment=ip_segment, area=area, machine_number=machine_number)
+
+@app.route("/idc/view_save/")
+def idc_view_save():
+    idcid = int(request.args.get('idcid'))
+    idcname = request.args.get('idcname')
+    area = request.args.get('area')
+    ip_segment = request.args.get("ip_segment")
+    machine_number = int(request.args.get('machine_number'))
+    idc_model.idc_view_save(idcid, idcname, area, ip_segment, machine_number)
+    return redirect("/idc_list/")
+
+@app.route("/idc/delete/")
+def idc_delete():
+    id = request.args.get('id', '0')
+    if re.match(r'\d+', id):
+        stu = idc_model.idcroom_delete(int(id))
+        return redirect('/idc_list/')
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=10000, debug=True)
