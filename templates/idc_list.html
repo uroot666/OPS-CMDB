@@ -4,6 +4,9 @@
 
 {% block nav_room %}class="active"{% endblock %}
 
+{% block nav_room_list %}class="active"{% endblock %}
+
+
 {% block link %}
 <link href="/static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
 <link href="/static/css/plugins/dataTables/dataTables.responsive.css" rel="stylesheet">
@@ -82,8 +85,8 @@
         <tr>
             <th>ID</th>
             <th>机房</th>
-            <th>地区</th>
-            <th>IP段</th>
+            <th>位置</th>
+            <th>IP范围</th>
             <th>机器数量</th>
             <th>操作</th>
         </tr>

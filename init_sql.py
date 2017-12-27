@@ -8,6 +8,7 @@ SQL_CREATE_USER = '''create table user(
     id int primary key auto_increment,
     name varchar(30),
     password varchar(40),
+    email varchar(40),
     age int
 )'''
 
@@ -18,6 +19,26 @@ SQL_CREATE_IDC_DETAILED = '''create table idc_detailed(
     ip_segment varchar(50),
     machine_number int
 )'''
+
+
+create table asset (
+    id int primary key auto_increment,
+    sn varchar(125) not null unique key comment '资产编号',
+    hostname varchar(64) comment '主机名',
+    os varchar(64) comment '操作系统',
+    ip varchar(128) comment 'ip地址',
+    machine_room_id int comment '机房ID',
+    vendor varchar(256) comment '生产厂商',
+    model varchar(64) comment '型号',
+    ram int comment '内存, 单位G',
+    cpu int comment 'cpu核数',
+    disk int comment '硬盘，单位G',
+    time_on_shelves date comment '商家时间',
+    over_guaranteed_date date comment '过保时间',
+    buiness varchar(256) comment '业务',
+    admin varchar(256) comment '使用者',
+    status int comment '0 正在使用,1 维护,2 删除'
+)
 
 db = pymysql.connect(**config.config)
 cursor = db.cursor()

@@ -2,14 +2,23 @@
 
 {% block title %}CMDB | 机房管理{% endblock %}
 
-{% block nav_user %}class="active"{% endblock %}
+{% block nav_room %}class="active"{% endblock %}
+
+{% block breadcrumb %}
+    <li>
+        <a href="javascript:void(0)">机房</a>
+    </li>
+    <li>
+        <strong>信息修改</strong>
+    </li>
+{% endblock %}
 
 {% block connect %}
 <div class="row">
     <div class="col-lg-12">
         <div class="ibox float-e-margins">
             <div class="ibox-title">
-                <h5>修改用户信息</h5>
+                <h5>信息修改</h5>
                 <div class="ibox-tools">
                     <a class="collapse-link">
                         <i class="fa fa-chevron-up"></i>
