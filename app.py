@@ -126,26 +126,60 @@ def test():
 
 
 ############################# 资产管理 #############################
+
+# 返回资产管理页面
 @app.route("/asset/")
 def asset_index():
     if session.get('user') is None:
         return redirect('/')
     return render_template('asset.html')
 
+# 返回资产信息
 @app.route("/asset/list/")
 def asset_list():
     assets = idc_model.get_asset()
     return json.dumps({"data": assets})
 
+# 保存添加资产信息
+@app.route("/asset/save/", methods=["POST"])
+def asset_save():
+    print(request.form)
+    return json.dumps({"code" : 200})
+
+# 修改资产
+@app.route("/asset/view/")
+def asset_view():
+    aid = request.args.get('id', 0)
+    view_asset_value = idc_model.get_asset_by_id(int(aid))
+    return json.dumps(view_asset_value)
+
+# 保存修改后的资产信息
+@app.route("/asset/update/", methods=["POST"])
+def asset_update():
+    print(request.form)
+    return json.dumps({"code" : 200})
+
+# 删除资产
+@app.route("/asset/delete/")
+def asset_delete():
+    aid = request.args.get("id")
+    if aid:
+        idc_model.asset_delete(int(aid))
+        return json.dumps({"code" : 200})
+
+
+# 返回机房信息页面
 @app.route("/idc_list/")
 def idc_list():
     engineroom_all = idc_model.engineroom_list()
     return render_template('idc_list.html', engineroom_all=engineroom_all)
 
+# 返回机房添加页面
 @app.route("/idc/add/")
 def idc_add():
     return render_template('idc_create.html')
 
+# 保存添加的机房
 @app.route("/idc/add_save/", methods=["POST"])
 def idc_add_save():
     idcname = request.form.get('idcname', '')
@@ -158,6 +192,7 @@ def idc_add_save():
         idc_model.idc_add_save(idcname, area, ip_segment, int(machine_number))
         return json.dumps({'code':200})
 
+# 返回机房修改页面
 @app.route("/idc/view/")
 def idc_view():
     idcid = int(request.args.get('id'))
@@ -168,6 +203,7 @@ def idc_view():
     machine_number = idc_tails.get("engineroom_number")
     return render_template('idc_view.html', idcid=idcid, idcname=idcname, ip_segment=ip_segment, area=area, machine_number=machine_number)
 
+# 将机房修改信息保存到数据库
 @app.route("/idc/view_save/")
 def idc_view_save():
     idcid = int(request.args.get('idcid'))
@@ -178,6 +214,7 @@ def idc_view_save():
     idc_model.idc_view_save(idcid, idcname, area, ip_segment, machine_number)
     return redirect("/idc_list/")
 
+#删除机房
 @app.route("/idc/delete/")
 def idc_delete():
     id = request.args.get('id', '0')

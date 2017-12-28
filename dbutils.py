@@ -1,4 +1,5 @@
 #encoding=UTF-8
+# 数据库函数
 
 import pymysql
 import config

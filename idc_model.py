@@ -1,7 +1,9 @@
 #encoding=utf-8
+# 资产管理的所有数据库操作
 
 import dbutils
 
+# sql语句
 SQL_ENGINEROOM_LIST = "select id,idcname,area,ip_segment,machine_number from idc_detailed"
 SQL_ENGINEROOM_LIST_COLUMS = ('id', 'idcname', 'area','ip_segment', 'engineroom_number')
 SQL_IDC_ADD_SAVE = "insert into idc_detailed(idcname, area, ip_segment, machine_number) value (%s, %s, %s, %s)"
@@ -9,9 +11,11 @@ SQL_IDC_VIEW_SAVE = "update idc_detailed set idcname=%s,area=%s,ip_segment=%s,ma
 SQL_IDC_TAILS_GET = "select idcname,area,ip_segment,machine_number from idc_detailed where id=%s"
 SQL_IDC_TAILS_GET_COLUMS = ('idcname', 'area','ip_segment', 'engineroom_number')
 SQL_IDC_DELETE = "delete from idc_detailed where id=%s"
-SQL_GET_ASSET = "select sn,hostname,os,ip,machine_room_id,vendor,model,ram,cpu,disk,time_on_shelves,over_guaranteed_date,buiness,admin,status from asset where status != 2"
-SQL_GET_ASSET_COLUMS = ("sn","hostname","os","ip","machine_room_id","vendor","model","ram","cpu","disk","time_on_shelves","over_guaranteed_date","buiness","admin","status")
-
+SQL_GET_ASSET = "select id,sn,hostname,os,ip,machine_room_id,vendor,model,ram,cpu,disk,time_on_shelves,over_guaranteed_date,buiness,admin,status from asset where status != 2"
+SQL_GET_ASSET_COLUMS = ("id","sn","hostname","os","ip","machine_room_id","vendor","model","ram","cpu","disk","time_on_shelves","over_guaranteed_date","buiness","admin","status")
+SQL_ASSET_DELETE = "delete from asset where id=%s"
+SQL_GET_ASSET_BY_ID = "select id,sn,hostname,os,ip,machine_room_id,vendor,model,ram,cpu,disk,time_on_shelves,over_guaranteed_date,buiness,admin,status from asset where id = %s"
+SQL_GET_ASSET_BY_ID_COLUMS = ("id","sn","hostname","os","ip","machine_room_id","vendor","model","ram","cpu","disk","time_on_shelves","over_guaranteed_date","buiness","admin","status")
 def idc_tails_get(id):
     idc_tails = dbutils.idc_db_operating(SQL_IDC_TAILS_GET, True, (id,))
     if len(idc_tails) != 0:
@@ -42,3 +46,14 @@ def get_asset():
                 asset[key] = asset[key].strftime('%Y-%m-%d')
         assets.append(asset)
     return assets
+
+def asset_delete(id):
+    dbutils.idc_db_operating(SQL_ASSET_DELETE, False, (id,))
+
+def get_asset_by_id(id):
+    assets = dbutils.idc_db_operating(SQL_GET_ASSET_BY_ID, True, (id))
+    asset = dict(zip(SQL_GET_ASSET_BY_ID_COLUMS, assets[0]))
+    for key in ('time_on_shelves','over_guaranteed_date'):
+        if asset[key]:
+            asset[key] = asset[key].strftime('%Y-%m-%d')
+    return asset

@@ -20,6 +20,8 @@ SQL_CREATE_IDC_DETAILED = '''create table idc_detailed(
     machine_number int
 )'''
 
+SQL_CRETE_ASSET_TEST = """INSERT INTO `asset` VALUES (
+    2,'3212','uroot','centos7','192.168.1.1',1,'DELL','R720',8,4,500,'2017-01-01','2017-12-28','开发机','uroot',1);"""
 
 SQL_CREATE_ASSET='''create table asset (
     id int primary key auto_increment,
@@ -33,7 +35,7 @@ SQL_CREATE_ASSET='''create table asset (
     ram int comment '内存, 单位G',
     cpu int comment 'cpu核数',
     disk int comment '硬盘，单位G',
-    time_on_shelves date comment '商家时间',
+    time_on_shelves date comment '上架时间',
     over_guaranteed_date date comment '过保时间',
     buiness varchar(256) comment '业务',
     admin varchar(256) comment '使用者',
