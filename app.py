@@ -125,7 +125,18 @@ def test():
     return render_template('index.html')
 
 
-############################# idc 管理 #############################
+############################# 资产管理 #############################
+@app.route("/asset/")
+def asset_index():
+    if session.get('user') is None:
+        return redirect('/')
+    return render_template('asset.html')
+
+@app.route("/asset/list/")
+def asset_list():
+    assets = idc_model.get_asset()
+    return json.dumps({"data": assets})
+
 @app.route("/idc_list/")
 def idc_list():
     engineroom_all = idc_model.engineroom_list()

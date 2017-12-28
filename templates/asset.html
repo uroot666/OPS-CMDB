@@ -1,0 +1,144 @@
+{% extends "layout.html" %}
+
+{% block title %}CMDB | 资产管理{% endblock %}
+
+{% block nav_room %}class="active"{% endblock %}
+
+{% block nav_asset %}class="active"{% endblock %}
+
+
+{% block link %}
+<link href="/static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/static/css/plugins/dataTables/dataTables.responsive.css" rel="stylesheet">
+<link href="/static/css/plugins/dataTables/dataTables.tableTools.min.css" rel="stylesheet">
+<link href="/static/css/animate.css" rel="stylesheet">
+<link href="/static/css/style.css" rel="stylesheet">
+{% endblock %}
+
+{% block breadcrumb %}
+    <li>
+        <a href="javascript:void(0)">资产</a>
+    </li>
+    <li>
+        <strong>资产管理</strong>
+    </li>
+{% endblock %}
+
+{% block connect %}
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#create_dailog">
+        添加资产
+    </button>
+    <br>
+    <!-- Modal -->
+    <div class="modal fade" id="create_dailog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">添加资产</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal create_form">
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">机房名称</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="idcname">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">机房地区</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="area">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">IP段</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="ip_segment">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">机器数量</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="machine_number">
+                        </div>
+                    </div>
+                    <div class="form-group"><label class="col-sm-2 control-label">机房简介</label>
+                        <div class="col-sm-10"><input type="text" class="form-control">
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            <button type="button" class="btn btn-primary create_btn">添加</button>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <table class="asset table table-bordered table-condensed  table-striped">
+        <thead>
+        <tr>
+            <th>SN</th>
+            <th>主机名/IP</th>
+            <th>OS</th>
+            <th>资源</th>
+            <th>业务</th>
+            <th>机房</th>
+            <th>上架/过保时间</th>
+            <th>厂商/型号</th>
+            <th>状态</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+            
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block script %}
+<script src="/static/js/plugins/dataTables/jquery.dataTables.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.responsive.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.tableTools.min.js"></script>
+{% endblock %}
+
+{% block js %}
+jQuery(document).ready(function(){
+    jQuery('.asset').dataTable({
+                responsive: true,
+                "dom": 'T<"clear">lfrtip',
+                "tableTools": {
+                    "sSwfPath":  "/static/js/plugins/dataTables/swf/copy_csv_xls_pdf.swf"
+                },
+                "ajax": "/asset/list/",
+                "columns": [
+                    { "data": "sn" }
+                    ]
+            });
+    jQuery('.create_btn').on('click', function() {
+        jQuery.post('/idc/add_save/',
+                    jQuery('.create_form').serializeArray(),
+                    function(data){
+                        if(data['code'] === 200){
+                            console.log(data)
+                            window.location.reload();
+                        }
+                        else if(data['code'] === 400){
+                            alert('error');
+                        }
+                    },'json');
+            })
+            jQuery('.btn_delete').on('click', function() {
+                var url = '/idc/delete/?id=' + jQuery(this).data('id');
+                if(confirm('确定要删除吗?')){
+                    window.location.replace(url);
+                    }
+                })
+});
+{% endblock %}

@@ -21,7 +21,7 @@ SQL_CREATE_IDC_DETAILED = '''create table idc_detailed(
 )'''
 
 
-create table asset (
+SQL_CREATE_ASSET='''create table asset (
     id int primary key auto_increment,
     sn varchar(125) not null unique key comment '资产编号',
     hostname varchar(64) comment '主机名',
@@ -38,12 +38,13 @@ create table asset (
     buiness varchar(256) comment '业务',
     admin varchar(256) comment '使用者',
     status int comment '0 正在使用,1 维护,2 删除'
-)
+)'''
 
 db = pymysql.connect(**config.config)
 cursor = db.cursor()
 cursor.execute(SQL_CREATE_USER)
 cursor.execute(SQL_CREATE_IDC_DETAILED)
+cursor.execute(SQL_CREATE_ASSET)
 db.commit()
 cursor.close()
 db.close()

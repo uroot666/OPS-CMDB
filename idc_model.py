@@ -9,6 +9,8 @@ SQL_IDC_VIEW_SAVE = "update idc_detailed set idcname=%s,area=%s,ip_segment=%s,ma
 SQL_IDC_TAILS_GET = "select idcname,area,ip_segment,machine_number from idc_detailed where id=%s"
 SQL_IDC_TAILS_GET_COLUMS = ('idcname', 'area','ip_segment', 'engineroom_number')
 SQL_IDC_DELETE = "delete from idc_detailed where id=%s"
+SQL_GET_ASSET = "select sn,hostname,os,ip,machine_room_id,vendor,model,ram,cpu,disk,time_on_shelves,over_guaranteed_date,buiness,admin,status from asset where status != 2"
+SQL_GET_ASSET_COLUMS = ("sn","hostname","os","ip","machine_room_id","vendor","model","ram","cpu","disk","time_on_shelves","over_guaranteed_date","buiness","admin","status")
 
 def idc_tails_get(id):
     idc_tails = dbutils.idc_db_operating(SQL_IDC_TAILS_GET, True, (id,))
@@ -29,3 +31,14 @@ def idc_view_save(idcid, idcname, area, ip_segment, machine_number):
 
 def idcroom_delete(id):
     dbutils.idc_db_operating(SQL_IDC_DELETE, False,(id,))
+
+def get_asset():
+    asset_list = dbutils.idc_db_operating(SQL_GET_ASSET, True)
+    assets = []
+    for asset in asset_list:
+        asset = dict(zip(SQL_GET_ASSET_COLUMS,asset))
+        for key in ('time_on_shelves','over_guaranteed_date'):
+            if asset[key]:
+                asset[key] = asset[key].strftime('%Y-%m-%d')
+        assets.append(asset)
+    return assets
