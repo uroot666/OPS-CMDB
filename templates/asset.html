@@ -13,6 +13,8 @@
 <link href="/static/css/plugins/dataTables/dataTables.tableTools.min.css" rel="stylesheet">
 <link href="/static/css/animate.css" rel="stylesheet">
 <link href="/static/css/style.css" rel="stylesheet">
+<link href="/static/css/bootstrap-slider.css" rel="stylesheet">
+
 {% endblock %}
 
 {% block breadcrumb %}
@@ -40,71 +42,72 @@
             </div>
             <div class="modal-body">
                 <form class="form-horizontal form-edit">
-                    <input type="hidden" name="id" value=""/>
+                    <input type="hidden" name="id" value="" />
                     <div class="form-group">
                         <label class="col-sm-2 control-label">SN</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" name="sn">
+                            <input type="text" class="form-control" name="sn" value="" />
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-2 control-label">主机名</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" name="hostname">
+                            <input type="text" class="form-control" name="hostname" value="" />
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-2 control-label">IP</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" name="ip">
+                            <input type="text" class="form-control" name="ip" value="" />
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-2 control-label">厂商</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" name="vendor">
+                            <input type="text" class="form-control" name="vendor" value="" />
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-2 control-label">型号</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" name="model">
+                            <input type="text" class="form-control" name="model" value="" />
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-2 control-label">CPU</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" name="cpu">
+                            <!-- <input type="text" class="form-control" name="cpu"> -->
+                            <input type="text" name= "cpu" class="form-control" data-slider-min="1" data-slider-max="32" data-slider-step="1" data-slider-value="" />
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-2 control-label">内存</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" name="ram">
+                            <input type="text" name= "ram" class="form-control" data-slider-min="1" data-slider-max="256" data-slider-step="1" data-slider-value="" />
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-2 control-label">硬盘</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" name="disk">
+                            <input type="text" name= "disk" class="form-control" data-slider-min="50" data-slider-max="1000" data-slider-step="1" data-slider-value="" />
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-2 control-label">使用者</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" name="admin">
+                            <input type="text" class="form-control" name="admin" value="" />
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-2 control-label">业务</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" name="buiness">
+                            <input type="text" class="form-control" name="buiness" value="" />
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-2 control-label">机房</label>
                         <div class="col-sm-10">
-                            <select class="form-control m-b" name="machine_room_id">
+                            <select class="form-control m-b" name="machine_room_id" value="" />
                                 <option value="1">乐到家机房</option>
                                 <option value="2">阿里云</option>
                             </select>
@@ -113,19 +116,19 @@
                     <div class="form-group">
                         <label class="col-sm-2 control-label">上架时间</label>
                         <div class="col-sm-10">
-                            <input type="date" class="form-control" name="time_on_shelves">
+                            <input type="date" class="form-control" name="time_on_shelves" value="" />
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-2 control-label">过保时间</label>
                         <div class="col-sm-10">
-                            <input type="date" class="form-control" name="over_guaranteed_date">
+                            <input type="date" class="form-control" name="over_guaranteed_date" value="" />
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-2 control-label">状态</label>
                         <div class="col-sm-10">
-                            <select class="form-control m-b" name="machine_room_id">
+                            <select class="form-control m-b" name="machine_room_id" >
                                 <option selected="selected" value="0">使用</option>
                                 <option value="1">维护</option>
                             </select>
@@ -168,6 +171,8 @@
 <script src="/static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
 <script src="/static/js/plugins/dataTables/dataTables.responsive.js"></script>
 <script src="/static/js/plugins/dataTables/dataTables.tableTools.min.js"></script>
+<script type="text/javascript" src="/static/js/bootstrap-slider.js"></script>
+
 {% endblock %}
 
 {% block js %}
@@ -250,7 +255,11 @@ jQuery(document).ready(function(){
                 {"id" : jQuery(this).data('id')},
                 function(response) {
                     for (var key in response) {
-                        jQuery("[name=" + key + "]").val(response[key]);
+                        if (key == 'cpu' || key == 'ram' || key == 'disk') {
+                            jQuery('input[name=' + key + ']').slider('setValue', response[key])
+                        } else {
+                            jQuery("[name=" + key + "]").val(response[key]);
+                        }
                     }
                     jQuery("#edit-dailog").modal("show")
                 },
@@ -259,9 +268,10 @@ jQuery(document).ready(function(){
     //保存资产修改
     jQuery('.btn-edit-save').on('click', function () {
         var params = jQuery(".form-edit").serializeArray();
+        //params[6]["cpu"] = jQuery('input[name=cpu]').slider('getValue');
+        console.log(params)
         jQuery.post('/asset/update/', params, function(response) { 
             if(response['code'] === 200){
-                console.log(response);
                 jQuery("#edit-dailog").modal("hide");
                 table.api().ajax.reload();
             }
@@ -270,6 +280,24 @@ jQuery(document).ready(function(){
             }
         },
         'json')
+    });
+    //CPU滑块,slider插件使用
+    jQuery('input[name=cpu]').slider({
+        formatter: function(value) {
+            return 'CPU: ' + value;
+        }
+    });
+    //内存滑块,slider插件使用
+    jQuery('input[name=ram]').slider({
+        formatter: function(value) {
+            return '内存: ' + value;
+        }
+    });
+    //硬盘滑块,slider插件使用
+    jQuery('input[name=disk]').slider({
+        formatter: function(value) {
+            return '硬盘: ' + value;
+        }
     });
 });
 {% endblock %}

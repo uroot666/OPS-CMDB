@@ -168,7 +168,8 @@ def asset_delete():
         return json.dumps({"code" : 200})
 
 
-# 返回机房信息页面
+####################### 机房信息管理 #########################
+# 机房信息页面
 @app.route("/idc_list/")
 def idc_list():
     engineroom_all = idc_model.engineroom_list()
