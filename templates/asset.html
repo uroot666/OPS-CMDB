@@ -28,11 +28,134 @@
 
 {% block connect %}
     <!-- Button trigger modal -->
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#edit-dailog">
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#create-dailog">
         资产创建
     </button>
     <br>
-    <!-- Modal -->
+    <!-- 资产添加 dialog -->
+    <div class="modal fade" id="create-dailog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">资产添加</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal form-create">
+                    <input type="hidden" name="create-id" value="" />
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">SN</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="create-sn" value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">主机名</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="create-hostname" value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">OS</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="create-os" value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">生产厂商</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="create-vendor" value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">IP</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="create-ip" value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">厂商</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="create-vendor" value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">型号</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="create-model" value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">CPU</label>
+                        <div class="col-sm-10">
+                            <input type="text" name= "create-cpu" class="form-control" data-slider-min="1" data-slider-max="32" data-slider-step="1" data-slider-value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">内存</label>
+                        <div class="col-sm-10">
+                            <input type="text" name= "create-ram" class="form-control" data-slider-min="1" data-slider-max="256" data-slider-step="1" data-slider-value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">硬盘</label>
+                        <div class="col-sm-10">
+                            <input type="text" name= "create-disk" class="form-control" data-slider-min="50" data-slider-max="1000" data-slider-step="1" data-slider-value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">使用者</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="create-admin" value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">业务</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="create-buiness" value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">机房</label>
+                        <div class="col-sm-10">
+                            <select class="form-control m-b" name="create-machine_room_id" value="" />
+                                <option value="1">乐到家机房</option>
+                                <option value="2">阿里云</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">上架时间</label>
+                        <div class="col-sm-10">
+                            <input type="date" class="form-control" name="create-time_on_shelves" value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">过保时间</label>
+                        <div class="col-sm-10">
+                            <input type="date" class="form-control" name="create-over_guaranteed_date" value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">状态</label>
+                        <div class="col-sm-10">
+                            <select class="form-control m-b" name="create-status" >
+                                <option selected="selected" value="0">使用</option>
+                                <option value="1">维护</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            <button type="button" class="btn btn-primary btn-create-save">添加</button>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- 资产编辑 dialog -->
     <div class="modal fade" id="edit-dailog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -53,6 +176,12 @@
                         <label class="col-sm-2 control-label">主机名</label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" name="hostname" value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">OS</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="os" value="" />
                         </div>
                     </div>
                     <div class="form-group">
@@ -128,7 +257,7 @@
                     <div class="form-group">
                         <label class="col-sm-2 control-label">状态</label>
                         <div class="col-sm-10">
-                            <select class="form-control m-b" name="machine_room_id" >
+                            <select class="form-control m-b" name="status" >
                                 <option selected="selected" value="0">使用</option>
                                 <option value="1">维护</option>
                             </select>
@@ -216,7 +345,7 @@ jQuery(document).ready(function(){
                         return elements.join("/");
                     }},
                     {"data": function(row) {
-                        return row["status"] == 1 ? "使用":"维护" ;
+                        return row["status"] == 0 ? "使用":"维护" ;
                     }},
                     {"data": function(row) {
                         var elements = [];
@@ -230,12 +359,13 @@ jQuery(document).ready(function(){
             });
 
     //资产添加
-    jQuery('.create_btn').on('click', function() {
+    jQuery('.btn-create-save').on('click', function() {
         jQuery.post('/asset/save/',
-                    jQuery('.create_form').serializeArray(),
+                    jQuery('.form-create').serializeArray(),
                     function(data){
                         if(data['code'] === 200){
-                            window.location.reload();
+                            jQuery("#create-dailog").modal("hide");
+                            table.api().ajax.reload();
                         }
                         else if(data['code'] === 400){
                             alert('error');
@@ -245,8 +375,13 @@ jQuery(document).ready(function(){
     
     //资产删除
     jQuery('.asset').on('click', '.btn-delete', function() {
-        var url = '/asset/delete/?id=' + jQuery(this).data('id');
-        alert('删除:' + jQuery(this).data('id'));
+        var url = '/asset/delete/' 
+        var id_dict = {"id":jQuery(this).data('id')};
+        if (confirm('确定要删除此资产吗?')) {
+                jQuery.post(url,id_dict);
+                jQuery("#edit-dailog").modal("hide");
+                table.api().ajax.reload();
+            }
         });
     
     //资产修改
@@ -268,8 +403,6 @@ jQuery(document).ready(function(){
     //保存资产修改
     jQuery('.btn-edit-save').on('click', function () {
         var params = jQuery(".form-edit").serializeArray();
-        //params[6]["cpu"] = jQuery('input[name=cpu]').slider('getValue');
-        console.log(params)
         jQuery.post('/asset/update/', params, function(response) { 
             if(response['code'] === 200){
                 jQuery("#edit-dailog").modal("hide");
@@ -284,19 +417,19 @@ jQuery(document).ready(function(){
     //CPU滑块,slider插件使用
     jQuery('input[name=cpu]').slider({
         formatter: function(value) {
-            return 'CPU: ' + value;
+            return 'CPU: ' + value + "核";
         }
     });
     //内存滑块,slider插件使用
     jQuery('input[name=ram]').slider({
         formatter: function(value) {
-            return '内存: ' + value;
+            return '内存: ' + value + "G";
         }
     });
     //硬盘滑块,slider插件使用
     jQuery('input[name=disk]').slider({
         formatter: function(value) {
-            return '硬盘: ' + value;
+            return '硬盘: ' + value + "G";
         }
     });
 });

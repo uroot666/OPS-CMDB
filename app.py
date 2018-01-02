@@ -143,7 +143,10 @@ def asset_list():
 # 保存添加资产信息
 @app.route("/asset/save/", methods=["POST"])
 def asset_save():
-    print(request.form)
+    as_list = []
+    for key in request.form:
+        as_list.append(request.form.get(key))
+    asset_save_value = idc_model.asset_save(tuple(as_list[1:]))
     return json.dumps({"code" : 200})
 
 # 修改资产
@@ -156,13 +159,17 @@ def asset_view():
 # 保存修改后的资产信息
 @app.route("/asset/update/", methods=["POST"])
 def asset_update():
-    print(request.form)
+    au_list = []
+    for key in request.form:
+        au_list.append(request.form.get(key))
+    au_list = au_list[1:] + [au_list[0]]
+    asset_update_value = idc_model.asset_update(tuple(au_list))
     return json.dumps({"code" : 200})
 
 # 删除资产
-@app.route("/asset/delete/")
+@app.route("/asset/delete/", methods=["POST"])
 def asset_delete():
-    aid = request.args.get("id")
+    aid = request.form.get("id")
     if aid:
         idc_model.asset_delete(int(aid))
         return json.dumps({"code" : 200})
