@@ -18,6 +18,8 @@ SQL_GET_ASSET_BY_ID = "select id,sn,hostname,os,ip,machine_room_id,vendor,model,
 SQL_GET_ASSET_BY_ID_COLUMS = ("id","sn","hostname","os","ip","machine_room_id","vendor","model","ram","cpu","disk","time_on_shelves","over_guaranteed_date","buiness","admin","status")
 SQL_ASSET_SAVE = 'insert into asset(sn,hostname,os,vendor,ip,model,cpu,ram,disk,admin,buiness,machine_room_id,time_on_shelves,over_guaranteed_date,status) value(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
 SQL_ASSET_UPDATE = 'update asset set sn=%s,hostname=%s,os=%s,ip=%s,vendor=%s,model=%s,cpu=%s,ram=%s,disk=%s,admin=%s,buiness=%s,machine_room_id=%s,time_on_shelves=%s,over_guaranteed_date=%s,status=%s where id=%s'
+
+
 def idc_tails_get(id):
     idc_tails = dbutils.idc_db_operating(SQL_IDC_TAILS_GET, True, (id,))
     if len(idc_tails) != 0:

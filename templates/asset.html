@@ -74,12 +74,6 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-2 control-label">厂商</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" name="create-vendor" value="" />
-                        </div>
-                    </div>
-                    <div class="form-group">
                         <label class="col-sm-2 control-label">型号</label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" name="create-model" value="" />
@@ -144,6 +138,11 @@
                                 <option value="1">维护</option>
                             </select>
                         </div>
+                    </div>
+                    <!-- 清空form表单 -->
+
+                    <div class="form-group">
+                        <input type="reset" name="reset" style="display: none;" />
                     </div>
                 </form>
             </div>
@@ -369,8 +368,11 @@ jQuery(document).ready(function(){
                         }
                         else if(data['code'] === 400){
                             alert('error');
+                            }
                         }
-                    },'json');
+                    ,'json');
+                    //清空form表单
+                    jQuery("input[type=reset]").trigger("click");
             });
     
     //资产删除
@@ -414,6 +416,28 @@ jQuery(document).ready(function(){
         },
         'json')
     });
+
+    //----------- 添加资产 -----------------
+    //CPU滑块,slider插件使用
+    jQuery('input[name=create-cpu]').slider({
+        formatter: function(value) {
+            return 'CPU: ' + value + "核";
+        }
+    });
+    //内存滑块,slider插件使用
+    jQuery('input[name=create-ram]').slider({
+        formatter: function(value) {
+            return '内存: ' + value + "G";
+        }
+    });
+    //硬盘滑块,slider插件使用
+    jQuery('input[name=create-disk]').slider({
+        formatter: function(value) {
+            return '硬盘: ' + value + "G";
+        }
+    });
+
+    //----------- 修改资产 -----------------
     //CPU滑块,slider插件使用
     jQuery('input[name=cpu]').slider({
         formatter: function(value) {
