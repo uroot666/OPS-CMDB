@@ -132,7 +132,9 @@ def test():
 def asset_index():
     if session.get('user') is None:
         return redirect('/')
-    return render_template('asset.html')
+    # 查询出所有机房的列表，返回到资产管理页面
+    engineroom_all = idc_model.engineroom_list()
+    return render_template('asset.html', engineroom_all=engineroom_all)
 
 # 返回资产信息
 @app.route("/asset/list/")

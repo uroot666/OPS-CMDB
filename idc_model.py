@@ -6,7 +6,7 @@ import dbutils
 # sql语句
 SQL_ENGINEROOM_LIST = "select id,idcname,area,ip_segment,machine_number from idc_detailed"
 SQL_ENGINEROOM_LIST_COLUMS = ('id', 'idcname', 'area','ip_segment', 'engineroom_number')
-SQL_IDC_ADD_SAVE = "insert into idc_detailed(idcname, arexa, ip_segment, machine_number) value (%s, %s, %s, %s)"
+SQL_IDC_ADD_SAVE = "insert into idc_detailed(idcname, area, ip_segment, machine_number) value (%s, %s, %s, %s)"
 SQL_IDC_VIEW_SAVE = "update idc_detailed set idcname=%s,area=%s,ip_segment=%s,machine_number=%s where id=%s"
 SQL_IDC_TAILS_GET = "select idcname,area,ip_segment,machine_number from idc_detailed where id=%s"
 SQL_IDC_TAILS_GET_COLUMS = ('idcname', 'area','ip_segment', 'engineroom_number')
@@ -48,6 +48,7 @@ def get_asset():
         for key in ('time_on_shelves','over_guaranteed_date'):
             if asset[key]:
                 asset[key] = asset[key].strftime('%Y-%m-%d')
+        asset['machine_room_id'] = idc_tails_get(asset['machine_room_id'])['idcname']
         assets.append(asset)
     return assets
 
