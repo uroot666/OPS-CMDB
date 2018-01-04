@@ -3,7 +3,8 @@ import pymysql
 import config
 
 #创建需要的数据库,添加测试数据
-
+SQL_DROP_CMDB = '''DROP DATABASE cmdb'''
+SQL_CREATE_CMDB = '''CREATE DATABASE cmdb'''
 SQL_CREATE_USER = '''create table user(
     id int primary key auto_increment,
     name varchar(30),
@@ -11,6 +12,7 @@ SQL_CREATE_USER = '''create table user(
     email varchar(40),
     age int
 )'''
+SQL_USER_TEST_CREATE = '''insert into user(name, password, age, email) value(root, md5(root), 12, uroot@gmail.com)'''
 
 SQL_CREATE_IDC_DETAILED = '''create table idc_detailed(
     id int primary key auto_increment,
@@ -19,9 +21,6 @@ SQL_CREATE_IDC_DETAILED = '''create table idc_detailed(
     ip_segment varchar(50),
     machine_number int
 )'''
-
-SQL_CRETE_ASSET_TEST = """INSERT INTO `asset` VALUES (
-    2,'3212','uroot','centos7','192.168.1.1',1,'DELL','R720',8,4,500,'2017-01-01','2017-12-28','开发机','uroot',1);"""
 
 SQL_CREATE_ASSET='''create table asset (
     id int primary key auto_increment,
@@ -42,11 +41,28 @@ SQL_CREATE_ASSET='''create table asset (
     status int comment '0 正在使用,1 维护,2 删除'
 )'''
 
+SQL_CREATE_MONITOR_HOST = '''create table monitor_host(
+    id int primary key auto_increment,
+    ip varchar(128),
+    cup float,
+    mem float,
+    disk float,
+    m_time timestamp,
+    r_time timestamp
+)engine=innodb default charset=utf8;'''
+
 db = pymysql.connect(**config.config)
 cursor = db.cursor()
+cursor.execute(SQL_DROP_CMDB)
+cursor.execute(SQL_CREATE_CMDB)
 cursor.execute(SQL_CREATE_USER)
 cursor.execute(SQL_CREATE_IDC_DETAILED)
 cursor.execute(SQL_CREATE_ASSET)
+cursor.execute(SQL_CREATE_MONITOR_HOST)
+db.commit()
+cursor.execute(SQL_CREATE_USER)
+cursor.execute(SQL_CREATE_IDC_DETAILED)
+cursor.execute(SQL_USER_TEST_CREATE)
 db.commit()
 cursor.close()
 db.close()
