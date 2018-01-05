@@ -3,7 +3,7 @@ import json
 import gconf
 import pymysql
 import dbutils
-
+from datetime import datetime
 #sql template
 SQL_VALIDATE_LOGIN = 'select id,name from user where name = %s and password = md5(%s)'
 SQL_VALIDATE_LOGIN_COLUMS = ("id", "name")
@@ -15,7 +15,7 @@ SQL_USER_EDIT_SAVE = 'update user set name = %s, age = %s, email = %s where id =
 SQL_USER_DELETE = 'delete from user where id = %s'
 SQL_USER_CREATE = 'insert into user(name, password, age, email) value( %s, md5(%s), %s, %s)'
 
-SQL_MONITOR_HOST_CREATE = 'insert into monitor_host(ip, cpu, mem, disk, m_time) value(%s, %s, %s, %s, %s)'
+SQL_MONITOR_HOST_CREATE = 'insert into monitor_host(ip, cpu, mem, disk, m_time, r_time) value(%s, %s, %s, %s, %s, %s)'
 
 #读出用户数据，并转换成列表返回
 def get_users():
@@ -164,5 +164,10 @@ def user_create(username, password, age, email):
     # fh.write(user_all)
     # fh.close
 
-def monitor_host_create(ip, cpu, mem, disk, m_time):
-    dbutils.idc_db_operating(SQL_MONITOR_HOST_CREATE, False, (ip, cpu, mem, disk, m_time))
+def monitor_host_create(req):
+    values = []
+    for key in ['ip', 'cpu', 'mem', 'disk', 'm_time']:
+        values.append(req.get(key, ''))
+    values.append(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    print(values)
+    dbutils.idc_db_operating(SQL_MONITOR_HOST_CREATE, False, tuple(values))

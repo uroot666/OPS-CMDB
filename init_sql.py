@@ -52,9 +52,6 @@ SQL_CREATE_MONITOR_HOST = '''create table cmdb.monitor_host(
 
 db = pymysql.connect(**config.config)
 cursor = db.cursor()
-cursor.execute(SQL_DROP_CMDB)
-cursor.execute(SQL_CREATE_CMDB)
-db.commit()
 cursor.execute(SQL_CREATE_USER)
 cursor.execute(SQL_CREATE_IDC_DETAILED)
 cursor.execute(SQL_CREATE_ASSET)
