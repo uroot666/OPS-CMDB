@@ -43,7 +43,7 @@ SQL_CREATE_ASSET='''create table cmdb.asset (
 SQL_CREATE_MONITOR_HOST = '''create table cmdb.monitor_host(
     id int primary key auto_increment,
     ip varchar(128),
-    cup float,
+    cpu float,
     mem float,
     disk float,
     m_time datetime,

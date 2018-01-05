@@ -428,7 +428,6 @@ jQuery(document).ready(function(){
     //保存资产修改
     jQuery('.btn-edit-save').on('click', function () {
         var params = jQuery(".form-edit").serializeArray();
-        console.log(params)
         jQuery.post('/asset/update/', params, function(response) { 
             if(response['code'] === 200){
                 jQuery("#edit-dailog").modal("hide");

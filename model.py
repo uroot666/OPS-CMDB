@@ -15,6 +15,8 @@ SQL_USER_EDIT_SAVE = 'update user set name = %s, age = %s, email = %s where id =
 SQL_USER_DELETE = 'delete from user where id = %s'
 SQL_USER_CREATE = 'insert into user(name, password, age, email) value( %s, md5(%s), %s, %s)'
 
+SQL_MONITOR_HOST_CREATE = 'insert into monitor_host(ip, cpu, mem, disk, m_time) value(%s, %s, %s, %s, %s)'
+
 #读出用户数据，并转换成列表返回
 def get_users():
     cnt, users = dbutils.user_db_operating(SQL_USER_LIST, True)
@@ -161,3 +163,6 @@ def user_create(username, password, age, email):
     # fh = open(gconf.USER_DATA_PATH, 'w')
     # fh.write(user_all)
     # fh.close
+
+def monitor_host_create(ip, cpu, mem, disk, m_time):
+    dbutils.idc_db_operating(SQL_MONITOR_HOST_CREATE, False, (ip, cpu, mem, disk, m_time))

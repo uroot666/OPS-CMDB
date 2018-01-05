@@ -232,5 +232,16 @@ def idc_delete():
         stu = idc_model.idcroom_delete(int(id))
         return redirect('/idc_list/')
 
+# -------------- agent http接口 ------------------
+@app.route('/monitor/host/create/', methods=['POST'])
+def monitor_host_create():
+    ip = request.form.get('ip')
+    cpu = request.form.get('cpu')
+    mem = request.form.get('mem')
+    disk = request.form.get('disk')
+    m_time = request.form.get('m_time')
+    model.monitor_host_create(ip, cpu, mem, disk, m_time)
+    return json.dumps({'code' : 200})
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=10000, debug=True)
