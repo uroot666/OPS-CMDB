@@ -28,7 +28,6 @@ def idc_tails_get(id):
 
 def engineroom_list():
     rt_list = dbutils.idc_db_operating(SQL_ENGINEROOM_LIST, True)
-    print(rt_list)
     return [dict(zip(SQL_ENGINEROOM_LIST_COLUMS, engineroom)) for engineroom in rt_list]
 
 def idc_add_save(idcname, area, ip_segment, machine_number):

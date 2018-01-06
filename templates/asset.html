@@ -282,7 +282,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">资产监控</h4>
+                <h4 class="modal-title" id="myModalLabel">资源监控</h4>
                 </div>
                 <div class="modal-body">
                     <div id="container" style="height: 400px; margin: 0 auto"></div>
@@ -449,56 +449,47 @@ jQuery(document).ready(function(){
 
     //资源监控
     jQuery('.asset').on('click', '.btn-monitor', function() {
-        var result = {
-            'categories' : ['一月', '二月', '三月', '四月', '五月', '六月','七月', '八月', '九月', '十月', '十一月', '十二月'],
-            'serial' : [{
-                name: 'CPU',
-                data: [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2,
-                   26.5, 23.3, 18.3, 13.9, 9.6]
-             }, 
-             {
-                name: '内存',
-                data: [-0.2, 0.8, 5.7, 11.3, 17.0, 22.0, 24.8,
-                   24.1, 20.1, 14.1, 8.6, 2.5]
-             }, 
-             {
-                name: '磁盘',
-                data: [-0.9, 0.6, 3.5, 8.4, 13.5, 17.0, 18.6,
-                   17.9, 14.3, 9.0, 3.9, 1.0]
-             }]
-        };
-        Highcharts.chart("container",{
-            title: {
-                text: 'CPU、内存、磁盘监控'
-            },
-            subtitle: {
-                text: ''
-            },
-            xAxis: {
-                categories: result['categories']
-            },
-            yAxis: {
-               title: {
-                  text: '使用率 (%)'
-               },
-               plotLines: [{
-                  value: 0,
-                  width: 1,
-                  color: '#808080'
-               }]
-            },
-            tooltip: {
-               valueSuffix: '%'
-            },
-            legend: {
-               layout: 'vertical',
-               align: 'right',
-               verticalAlign: 'middle',
-               borderWidth: 0
-            },
-            series: result['serial']
-        });
-        jQuery("#monitor-dailog").modal("show")
+        jQuery.get('/monitor/host/list/',
+                    {'id':jQuery(this).data('id')},
+                    function(response) {
+                        if (response['code'] == 200) {
+                            var result = response['result'];
+                            Highcharts.chart("container",{
+                                title: {
+                                    text: 'CPU、内存、磁盘监控'
+                                },
+                                subtitle: {
+                                    text: ''
+                                },
+                                xAxis: {
+                                    categories: result['categories']
+                                },
+                                yAxis: {
+                                title: {
+                                    text: '使用率 (%)'
+                                },
+                                plotLines: [{
+                                    value: 0,
+                                    width: 1,
+                                    color: '#808080'
+                                }]
+                                },
+                                tooltip: {
+                                valueSuffix: '%'
+                                },
+                                legend: {
+                                layout: 'vertical',
+                                align: 'right',
+                                verticalAlign: 'middle',
+                                borderWidth: 0
+                                },
+                                series: result['serial']
+                            });
+                            jQuery("#monitor-dailog").modal("show")
+                        }
+                    },
+                    'json'
+                    );
         });
     
     //保存资产修改

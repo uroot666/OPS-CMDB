@@ -232,7 +232,8 @@ def idc_delete():
         stu = idc_model.idcroom_delete(int(id))
         return redirect('/idc_list/')
 
-# -------------- agent http接口 ------------------
+####################### agent http接口 ##########################
+# 将agent发回的数据存储到数据库
 @app.route('/monitor/host/create/', methods=['POST'])
 def monitor_host_create():
     req = request.form
@@ -244,6 +245,15 @@ def monitor_host_create():
     # model.monitor_host_create(ip, cpu, mem, disk, m_time)
     model.monitor_host_create(req)
     return json.dumps({'code' : 200})
+
+# 返回资源状态信息
+@app.route('/monitor/host/list/')
+def monitor_host_list():
+    id = request.args.get('id')
+    asset = idc_model.get_asset_by_id(id)
+    ip = asset.get('ip', '')
+    result = model.monitor_host_list(ip)
+    return json.dumps({'code':200, 'result':result})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=10000, debug=True)

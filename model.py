@@ -3,7 +3,7 @@ import json
 import gconf
 import pymysql
 import dbutils
-from datetime import datetime
+import datetime
 #sql template
 SQL_VALIDATE_LOGIN = 'select id,name from user where name = %s and password = md5(%s)'
 SQL_VALIDATE_LOGIN_COLUMS = ("id", "name")
@@ -16,6 +16,7 @@ SQL_USER_DELETE = 'delete from user where id = %s'
 SQL_USER_CREATE = 'insert into user(name, password, age, email) value( %s, md5(%s), %s, %s)'
 
 SQL_MONITOR_HOST_CREATE = 'insert into monitor_host(ip, cpu, mem, disk, m_time, r_time) value(%s, %s, %s, %s, %s, %s)'
+SQL_MONITOR_HOST_LIST = 'select ip, cpu, mem, disk, m_time from monitor_host where ip=%s and r_time >= %s order by m_time asc'
 
 #读出用户数据，并转换成列表返回
 def get_users():
@@ -168,6 +169,50 @@ def monitor_host_create(req):
     values = []
     for key in ['ip', 'cpu', 'mem', 'disk', 'm_time']:
         values.append(req.get(key, ''))
-    values.append(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-    print(values)
+    values.append(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
     dbutils.idc_db_operating(SQL_MONITOR_HOST_CREATE, False, tuple(values))
+
+# 返回监控数据（cpu，disk, mem）
+def monitor_host_list(ip):
+    start_time = (datetime.datetime.now() - datetime.timedelta(days = 10)).strftime('%Y-%m-%d %H:%M:%S')
+    print(start_time)
+    rt_list = dbutils.idc_db_operating(SQL_MONITOR_HOST_LIST, True, (ip,start_time))
+    categoy_list, cpu_list, disk_list, mem_list = [], [], [], []
+    for line in rt_list:
+        categoy_list.append(line[4].strftime('%H:%M'))
+        cpu_list.append(line[1])
+        disk_list.append(line[3])
+        mem_list.append(line[2])
+
+    result = {
+        'categories' : categoy_list,
+        'serial' : [{
+                'name':'CPU',
+                'data':cpu_list
+            },{
+                'name':'磁盘',
+                'data':disk_list
+            },{
+                'name':'内存',
+                'data':mem_list
+            }]
+        }
+    # result = {
+    #     'categories' : ['一月', '二月', '三月', '四月', '五月', '六月','七月', '八月', '九月', '十月', '十一月', '十二月'],
+    #     'serial' : [{
+    #         'name': 'CPU',
+    #         'data': [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2,
+    #             26.5, 23.3, 18.3, 13.9, 9.6]
+    #         }, 
+    #         {
+    #         'name': '内存',
+    #         'data': [-0.2, 0.8, 5.7, 11.3, 17.0, 22.0, 24.8,
+    #             24.1, 20.1, 14.1, 8.6, 2.5]
+    #         }, 
+    #         {
+    #         'name': '磁盘',
+    #         'data': [-0.9, 0.6, 3.5, 8.4, 13.5, 17.0, 18.6,
+    #             17.9, 14.3, 9.0, 3.9, 1.0]
+    #         }]
+    # }
+    return result

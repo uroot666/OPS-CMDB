@@ -7,7 +7,7 @@ from datetime import datetime
 import psutil
 import requests
 
-INTERVAL = 10
+INTERVAL = 1
 
 URL = 'http://localhost:10000/monitor/host/create/'
 
