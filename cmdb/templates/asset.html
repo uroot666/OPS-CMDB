@@ -1,0 +1,562 @@
+{% extends "layout.html" %}
+
+{% block title %}CMDB | 资产管理{% endblock %}
+
+{% block nav_room %}class="active"{% endblock %}
+
+{% block nav_asset %}class="active"{% endblock %}
+
+
+{% block link %}
+<link href="/static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/static/css/plugins/dataTables/dataTables.responsive.css" rel="stylesheet">
+<link href="/static/css/plugins/dataTables/dataTables.tableTools.min.css" rel="stylesheet">
+<link href="/static/css/animate.css" rel="stylesheet">
+<link href="/static/css/style.css" rel="stylesheet">
+<link href="/static/css/bootstrap-slider.css" rel="stylesheet">
+<link href="/static/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+<link href="/static/bootstrap-datepicker/css/bootstrap-datepicker.css" rel="stylesheet">
+
+{% endblock %}
+
+{% block breadcrumb %}
+    <li>
+        <a href="javascript:void(0)">资产</a>
+    </li>
+    <li>
+        <strong>资产管理</strong>
+    </li>
+{% endblock %}
+
+{% block connect %}
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#create-dailog">
+        资产创建
+    </button>
+    <br>
+    <!-- 资产添加 dialog -->
+    <div class="modal fade" id="create-dailog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">资产添加</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal form-create">
+                    <input type="hidden" name="create-id" value="" />
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">SN</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="create-sn" value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">主机名</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="create-hostname" value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">OS</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="create-os" value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">生产厂商</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="create-vendor" value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">IP</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="create-ip" value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">型号</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="create-model" value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">CPU</label>
+                        <div class="col-sm-10">
+                            <input type="text" name= "create-cpu" class="form-control" data-slider-min="1" data-slider-max="32" data-slider-step="1" data-slider-value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">内存</label>
+                        <div class="col-sm-10">
+                            <input type="text" name= "create-ram" class="form-control" data-slider-min="1" data-slider-max="256" data-slider-step="1" data-slider-value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">硬盘</label>
+                        <div class="col-sm-10">
+                            <input type="text" name= "create-disk" class="form-control" data-slider-min="50" data-slider-max="1000" data-slider-step="1" data-slider-value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">使用者</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="create-admin" value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">业务</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="create-buiness" value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">机房</label>
+                        <div class="col-sm-10">
+                            <select class="form-control m-b" name="create-machine_room_id" value="" />
+                                {% for engineroom in engineroom_all %}
+                                <option value={{engineroom["id"]}}>{{engineroom["idcname"]}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">上架时间</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="date form-control" name="create-time_on_shelves" value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">过保时间</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="date form-control" name="create-over_guaranteed_date" value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">状态</label>
+                        <div class="col-sm-10">
+                            <select class="form-control m-b" name="create-status" >
+                                <option selected="selected" value="0">使用</option>
+                                <option value="1">维护</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- 清空form表单 -->
+
+                    <div class="form-group">
+                        <input type="reset" name="reset" style="display: none;" />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            <button type="button" class="btn btn-primary btn-create-save">添加</button>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- 资产编辑 dialog -->
+    <div class="modal fade" id="edit-dailog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">资产编辑</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal form-edit">
+                    <input type="hidden" name="id" value="" />
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">SN</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="sn" value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">主机名</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="hostname" value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">OS</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="os" value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">IP</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="ip" value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">厂商</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="vendor" value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">型号</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="model" value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">CPU</label>
+                        <div class="col-sm-10">
+                            <!-- <input type="text" class="form-control" name="cpu"> -->
+                            <input type="text" name= "cpu" class="form-control" data-slider-min="1" data-slider-max="32" data-slider-step="1" data-slider-value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">内存</label>
+                        <div class="col-sm-10">
+                            <input type="text" name= "ram" class="form-control" data-slider-min="1" data-slider-max="256" data-slider-step="1" data-slider-value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">硬盘</label>
+                        <div class="col-sm-10">
+                            <input type="text" name= "disk" class="form-control" data-slider-min="50" data-slider-max="1000" data-slider-step="1" data-slider-value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">使用者</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="admin" value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">业务</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="buiness" value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">机房</label>
+                        <div class="col-sm-10">
+                            <select class="form-control m-b" name="machine_room_id" value="" />
+                                {% for engineroom in engineroom_all %}
+                                <option value={{engineroom["id"]}}>{{engineroom['idcname']}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">上架时间</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="date form-control" name="time_on_shelves" value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">过保时间</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="date form-control" name="over_guaranteed_date" value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">状态</label>
+                        <div class="col-sm-10">
+                            <select class="form-control m-b" name="status" >
+                                <option selected="selected" value="0">使用</option>
+                                <option value="1">维护</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            <button type="button" class="btn btn-primary btn-edit-save">更新</button>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- 监控 dialog -->
+    <div class="modal fade" id="monitor-dailog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">资源监控</h4>
+                </div>
+                <div class="modal-body">
+                    <div id="container" style="height: 400px; margin: 0 auto"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <table class="asset table table-bordered table-condensed  table-striped">
+        <thead>
+        <tr>
+            <th>SN</th>
+            <th>主机名/IP</th>
+            <th>OS</th>
+            <th>CPU/内存/硬盘</th>
+            <th>业务</th>
+            <th>管理员</th>
+            <th>机房</th>
+            <th>上架/过保时间</th>
+            <th>厂商/型号</th>
+            <th>状态</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+            
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block script %}
+<script src="/static/js/plugins/dataTables/jquery.dataTables.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.responsive.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.tableTools.min.js"></script>
+<script type="text/javascript" src="/static/js/bootstrap-slider.js"></script>
+<script src="/static/js/plugins/sweetalert/sweetalert.min.js"></script>
+<script src="/static/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+<script src="/static/js/highcharts.js"></script>
+
+{% endblock %}
+
+{% block js %}
+
+//databable 显示资产信息
+jQuery(document).ready(function(){
+    var table = jQuery('.asset').dataTable({
+                responsive: true,
+                "dom": 'T<"clear">lfrtip',
+                "tableTools": {
+                    "sSwfPath":  "/static/js/plugins/dataTables/swf/copy_csv_xls_pdf.swf"
+                },
+                "ajax": "/asset/list/",
+                "columns": [
+                    { "data": "sn" },
+                    {"data": function(row) {
+                        return row["hostname"] + '/' + row["ip"];
+                        }
+                    },
+                    {"data": "os"},
+                    {"data": function(row) {
+                       var elements = [];
+                       elements.push(row["cpu"] + "核")
+                       elements.push(row["ram"] + "G")
+                       elements.push(row["disk"] + "G")
+                       return elements.join('/')
+                    }},
+                    {"data": "buiness"},
+                    {"data": "admin"},
+                    {"data": "machine_room_id"},
+                    {"data": function(row) {
+                        var elements = [];
+                        elements.push(row["time_on_shelves"]);
+                        elements.push(row["over_guaranteed_date"]);
+                        return elements.join("/")
+                    }},
+                    {"data": function(row) {
+                        var elements = [];
+                        elements.push(row["vendor"]);
+                        elements.push(row["model"]);
+                        return elements.join("/");
+                    }},
+                    {"data": function(row) {
+                        return row["status"] == 0 ? "使用":"维护" ;
+                    }},
+                    {"data": function(row) {
+                        var elements = [];
+                        elements.push("<a href='javascript:void(0)'><i class='fa fa-eye btn-monitor'" 
+                            + "data-id=" + row['id'] + "></i></a>");
+                        elements.push("<a href='javascript:void(0)'><i class='fa fa-edit btn-edit'" 
+                            + "data-id=" + row['id'] + "></i></a>");
+                        elements.push("<a href='javascript:void(0)'><i class='fa fa-trash btn-delete'" 
+                            + "data-id=" + row['id'] + "></i></a>");
+                        return elements.join(" ");
+                    }}
+                    ]
+            });
+
+    //资产添加
+    jQuery('.btn-create-save').on('click', function() {
+        jQuery.post('/asset/save/',
+                    jQuery('.form-create').serializeArray(),
+                    function(data){
+                        if(data['code'] === 200){
+                            jQuery("#create-dailog").modal("hide");
+                            table.api().ajax.reload();
+                        }
+                        else if(data['code'] === 400){
+                            alert('error');
+                            }
+                        }
+                    ,'json');
+                    //清空form表单
+                    jQuery("input[type=reset]").trigger("click");
+                    swal("添加成功！", "创建了一条资产信息！","success")
+            });
+    
+    //资产删除
+    jQuery('.asset').on('click', '.btn-delete', function() {
+        var url = '/asset/delete/' 
+        var id_dict = {"id":jQuery(this).data('id')};
+        swal({ 
+            title: "确定删除吗？", 
+            text: "你将无法恢复资产条目！", 
+            type: "warning",
+            showCancelButton: true, 
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "确定删除！", 
+            cancelButtonText: "取消删除！",
+            closeOnConfirm: false, 
+            closeOnCancel: false	
+          },
+          function(isConfirm){ 
+            if (isConfirm) { 
+                swal("删除！", "资产已经被删除。","success"); 
+                jQuery.post(url,id_dict);
+                jQuery("#edit-dailog").modal("hide");
+                table.api().ajax.reload();
+            } else { 
+              swal("取消！", "已经取消删除:)","error"); 
+            } 
+          });
+        });
+    
+    //资产修改
+    jQuery('.asset').on('click', '.btn-edit', function() {
+        jQuery.get('/asset/view/',
+                {"id" : jQuery(this).data('id')},
+                function(response) {
+                    for (var key in response) {
+                        if (key == 'cpu' || key == 'ram' || key == 'disk') {
+                            jQuery('input[name=' + key + ']').slider('setValue', response[key])
+                        } else {
+                            jQuery("[name=" + key + "]").val(response[key]);
+                        }
+                    }
+                    jQuery("#edit-dailog").modal("show")
+                },
+                'json');
+        });
+    
+    //保存资产修改
+    jQuery('.btn-edit-save').on('click', function () {
+        var params = jQuery(".form-edit").serializeArray();
+        jQuery.post('/asset/update/', params, function(response) { 
+            if(response['code'] === 200){
+                jQuery("#edit-dailog").modal("hide");
+                swal("修改成功！",'',"success")
+                table.api().ajax.reload();
+            }
+            else if(response['code'] === 400){
+                alert('error');
+            }
+        },
+        'json')
+    });
+
+    //资源监控
+    jQuery('.asset').on('click', '.btn-monitor', function() {
+        jQuery.get('/monitor/host/list/',
+            {'id':jQuery(this).data('id')},
+            function(response) {
+                if (response['code'] == 200) {
+                    var result = response['result'];
+                    Highcharts.chart("container",{
+                        title: {
+                            text: 'CPU、内存、磁盘监控'
+                        },
+                        subtitle: {
+                            text: ''
+                        },
+                        xAxis: {
+                            categories: result['categories']
+                        },
+                        yAxis: {
+                        title: {
+                            text: '使用率 (%)'
+                        },
+                        plotLines: [{
+                            value: 0,
+                            width: 1,
+                            color: '#808080'
+                        }]
+                        },
+                        tooltip: {
+                        valueSuffix: '%'
+                        },
+                        legend: {
+                        layout: 'vertical',
+                        align: 'right',
+                        verticalAlign: 'middle',
+                        borderWidth: 0
+                        },
+                        series: result['serial']
+                    });
+                    jQuery("#monitor-dailog").modal("show")
+                }
+            },
+            'json'
+            );
+        });
+
+    //----------- 添加资产 -----------------
+    //CPU滑块,slider插件使用
+    jQuery('input[name=create-cpu]').slider({
+        formatter: function(value) {
+            return 'CPU: ' + value + "核";
+        }
+    });
+    //内存滑块,slider插件使用
+    jQuery('input[name=create-ram]').slider({
+        formatter: function(value) {
+            return '内存: ' + value + "G";
+        }
+    });
+    //硬盘滑块,slider插件使用
+    jQuery('input[name=create-disk]').slider({
+        formatter: function(value) {
+            return '硬盘: ' + value + "G";
+        }
+    });
+
+    //----------- 修改资产 -----------------
+    //CPU滑块,slider插件使用
+    jQuery('input[name=cpu]').slider({
+        formatter: function(value) {
+            return 'CPU: ' + value + "核";
+        }
+    });
+    //内存滑块,slider插件使用
+    jQuery('input[name=ram]').slider({
+        formatter: function(value) {
+            return '内存: ' + value + "G";
+        }
+    });
+    //硬盘滑块,slider插件使用
+    jQuery('input[name=disk]').slider({
+        formatter: function(value) {
+            return '硬盘: ' + value + "G";
+        }
+    });
+
+    //时间插件datepicker
+    jQuery('input.date').datepicker({
+        language: 'zh-CN',
+        todayBtn: "linked",
+        format: 'yyyy-mm-dd',
+        keyboardNavigation: false,
+        forceParse: false,
+        calendarWeeks: true,
+        autoclose: true
+    });
+});
+{% endblock %}
