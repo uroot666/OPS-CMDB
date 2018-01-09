@@ -7,3 +7,11 @@
 
 ## cmdb agent
 1. 使用了psutil, requests模块
+
+## 前端使用
+1. bootstrap
+2. sweetalert
+3. datatables
+4. jQuery
+5. Highcharts
+6. datepicker
