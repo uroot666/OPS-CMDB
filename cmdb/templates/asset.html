@@ -489,9 +489,9 @@ jQuery(document).ready(function(){
     });
 
     //资源监控
-    jQuery('.asset').on('click', '.btn-monitor', function() {
+    function refresh_monitor_list(id){
         jQuery.get('/monitor/host/list/',
-            {'id':jQuery(this).data('id')},
+            {'id': id},
             function(response) {
                 if (response['code'] == 200) {
                     var result = response['result'];
@@ -526,13 +526,24 @@ jQuery(document).ready(function(){
                         },
                         series: result['serial']
                     });
-                    jQuery("#monitor-dailog").modal("show")
                 }
             },
-            'json'
-            );
+            'json')
+        };
+    var th = null;
+    jQuery('.asset').on('click', '.btn-monitor', function() {
+        jQuery("#monitor-dailog").modal("show");
+        var id = jQuery(this).data('id');
+        if(th){return;};
+        refresh_monitor_list(id);
+        th = setInterval(function(){
+            refresh_monitor_list(id)
+            }, 
+            3 * 1000)
         });
-
+    jQuery('#monitor-dailog').on('hidden.bs.modal', function() {
+        clearInterval(th)
+    });
     //----------- 添加资产 -----------------
     //CPU滑块,slider插件使用
     jQuery('input[name=create-cpu]').slider({
