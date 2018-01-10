@@ -50,6 +50,16 @@ SQL_CREATE_MONITOR_HOST = '''create table cmdb.monitor_host(
     r_time datetime
 )engine=innodb default charset=utf8;'''
 
+SQL_ALERT_CREATE = '''create table alert(
+    id int primary key auto_increament,
+    ip varchar(128),
+    message varchar(128),
+    admin varchar(32),
+    status int,
+    type int,
+    c_time datetime,
+)engine=innodb default charset=utf8;'''
+
 db = pymysql.connect(**config.config)
 cursor = db.cursor()
 cursor.execute(SQL_CREATE_USER)

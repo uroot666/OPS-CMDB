@@ -5,8 +5,10 @@ import datetime
 
 from . import gconf
 from . import dbutils
+from utils import encryption
+
 #sql template
-SQL_VALIDATE_LOGIN = 'select id,name from user where name = %s and password = md5(%s)'
+SQL_VALIDATE_LOGIN = 'select id,name from user where name = %s and password = %s'
 SQL_VALIDATE_LOGIN_COLUMS = ("id", "name")
 SQL_USER_LIST = 'select id, name, age, email from user'
 SQL_USER_LIST_COLUMS = ("id", "username", "age", "email")
@@ -40,7 +42,7 @@ def get_users():
 
 # 查询数据库比对用户密码
 def validate_login(username, password):
-    cnt, record = dbutils.user_db_operating(SQL_VALIDATE_LOGIN, True, (username, password))
+    cnt, record = dbutils.user_db_operating(SQL_VALIDATE_LOGIN, True, (username, encryption.md5_str(password)))
     if len(record) != 0:
         record = record[0]
     return dict(zip(SQL_VALIDATE_LOGIN_COLUMS, record)) if record else None
