@@ -1,6 +1,6 @@
 #encoding=utf-8
 import pymysql
-import config
+from cmdb import config
 
 #创建需要的数据库,添加测试数据
 SQL_DROP_CMDB = '''DROP DATABASE cmdb'''
@@ -51,13 +51,13 @@ SQL_CREATE_MONITOR_HOST = '''create table cmdb.monitor_host(
 )engine=innodb default charset=utf8;'''
 
 SQL_ALERT_CREATE = '''create table alert(
-    id int primary key auto_increament,
+    id int primary key auto_increment,
     ip varchar(128),
     message varchar(128),
-    admin varchar(32),
+    admin varchar(64),
     status int,
     type int,
-    c_time datetime,
+    c_time datetime
 )engine=innodb default charset=utf8;'''
 
 db = pymysql.connect(**config.config)
