@@ -18,6 +18,8 @@ SQL_GET_ASSET_BY_ID = "select id,sn,hostname,os,ip,machine_room_id,vendor,model,
 SQL_GET_ASSET_BY_ID_COLUMS = ("id","sn","hostname","os","ip","machine_room_id","vendor","model","ram","cpu","disk","time_on_shelves","over_guaranteed_date","buiness","admin","status")
 SQL_ASSET_SAVE = 'insert into asset(sn,hostname,os,vendor,ip,model,cpu,ram,disk,admin,buiness,machine_room_id,time_on_shelves,over_guaranteed_date,status) value(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
 SQL_ASSET_UPDATE = 'update asset set sn=%s,hostname=%s,os=%s,ip=%s,vendor=%s,model=%s,cpu=%s,ram=%s,disk=%s,admin=%s,buiness=%s,machine_room_id=%s,time_on_shelves=%s,over_guaranteed_date=%s,status=%s where id=%s'
+SQL_GET_ASSET_BY_IP = "select id,sn,hostname,os,ip,machine_room_id,vendor,model,ram,cpu,disk,time_on_shelves,over_guaranteed_date,buiness,admin,status from asset where ip = %s"
+SQL_GET_ASSET_BY_IP_COLUMS = ("id","sn","hostname","os","ip","machine_room_id","vendor","model","ram","cpu","disk","time_on_shelves","over_guaranteed_date","buiness","admin","status")
 
 
 def idc_tails_get(id):
@@ -57,6 +59,15 @@ def asset_delete(id):
 def get_asset_by_id(id):
     assets = dbutils.idc_db_operating(SQL_GET_ASSET_BY_ID, True, (id))
     asset = dict(zip(SQL_GET_ASSET_BY_ID_COLUMS, assets[0]))
+    for key in ('time_on_shelves','over_guaranteed_date'):
+        if asset[key]:
+            asset[key] = asset[key].strftime('%Y-%m-%d')
+    return asset
+
+# 根据IP查询出asset
+def get_asset_by_ip(ip):
+    assets = dbutils.idc_db_operating(SQL_GET_ASSET_BY_IP, True, (ip))
+    asset = dict(zip(SQL_GET_ASSET_BY_IP_COLUMS, assets[0]))
     for key in ('time_on_shelves','over_guaranteed_date'):
         if asset[key]:
             asset[key] = asset[key].strftime('%Y-%m-%d')
