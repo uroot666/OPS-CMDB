@@ -257,6 +257,19 @@ def monitor_host_list():
     result = model.monitor_host_list(ip)
     return json.dumps({'code':200, 'result':result})
 
+# 返回告警日志页面
+@app.route('/moitor/log/')
+def moitor_log_index():
+    if session.get('user') is None:
+        return redirect('/')
+    return render_template('moitor_log.html')
+
+# 查询出告警日志，然会给告警页面
+@app.route('/moitor/log/list/')
+def moitor_log_list():
+    moitor_log = model.get_moitor_log()
+    return json.dumps({"data" : moitor_log})
+
 # 修改用户密码
 @app.route('/user/set/password/', methods=['POST'])
 def user_set_password_view():

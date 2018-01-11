@@ -9,8 +9,8 @@ from email.mime.text import MIMEText
 from email.header import Header
 from email.utils import formataddr
  
-my_sender = '*******'    # 发件人邮箱账号
-my_pass = '*******'      # 发件人邮箱密码
+my_sender = '@163.com'    # 发件人邮箱账号
+my_pass = '********'      # 发件人邮箱密码
 
 def mail(my_user, content_subject, content):
     ret=True

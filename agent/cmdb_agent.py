@@ -14,7 +14,7 @@ import requests
 
 loger = logging.getLogger(__name__)
 
-INTERVAL = 1
+INTERVAL = 3
 
 URL = 'http://%s:%s/monitor/host/create/'
 

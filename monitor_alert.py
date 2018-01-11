@@ -9,7 +9,7 @@ from cmdb import idc_model
 
 from utils import mail
 
-INTERVAL = 100  #最近多长时间,单位秒
+INTERVAL = 5  #最近多长时间,单位秒
 DEFAULT_ADMIN = '2206081075@qq.com'   # 默认管理员邮箱
 
 #阀值
@@ -28,12 +28,15 @@ def monitor_alert():
     while True:
         r_time = (datetime.datetime.now() - datetime.timedelta(minutes=INTERVAL)).strftime("%Y-%m-%d %H:%M:%S")
         _, rt_list = dbutils.db_operating(SELECT_MONITOR_HOST, True, (r_time,))
+
         rt_dict = {}
+
         for line in rt_list:
             rt_dict.setdefault(line[0], {'cpu' : 0, 'mem' : 0, 'disk' : 0})
             for key, value in SELECT_MONITOR_HOST_COLUMNS.items():
                 if line[key] > policies[value]['ceil']:
                     rt_dict[line[0]][value] += 1
+
         for key in rt_dict:
             messages = []
             for resource in SELECT_MONITOR_HOST_COLUMNS.values():
@@ -45,10 +48,10 @@ def monitor_alert():
                 # if admin != DEFAULT_ADMIN:
                 #     admin = [admin, DEFAULT_ADMIN]
                 c_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                dbutils.db_operating(SQL_ALERT_CREATE, False, (key, ','.join(messages), 'uroot', c_time))
-                mail.mail(admin, '资源告警', key + '<br/>' + '<br/>'.join(messages))
-                print('mail start', admin)
-        time.sleep(INTERVAL)
+                dbutils.db_operating(SQL_ALERT_CREATE, False, (key, ','.join(messages), admin, c_time))
+                RET = mail.mail(admin, '资源告警', key + '<br/>' + '<br/>'.join(messages))
+                print("start mail", RET)
+        time.sleep(3)
 
 if __name__ == '__main__':
     monitor_alert()

@@ -232,3 +232,16 @@ def user_set_password_view(req):
         return {"code":200}
     else:
         return {"code":400}
+
+# 查询出所有未处理的告警记录
+SQL_GET_MOITOR_LOG = "select id,ip,message,admin,status,type,c_time from alert where type=1"
+SQL_GET_MOITOR_LOG_COLUMS = ('id', 'ip', 'message', 'admin', 'status', 'type', 'c_time')
+def get_moitor_log():
+    moitor_log_list = dbutils.idc_db_operating(SQL_GET_MOITOR_LOG, True)
+    log_list = []
+    for moitor_log in moitor_log_list:
+        moitor_log = dict(zip(SQL_GET_MOITOR_LOG_COLUMS,moitor_log))
+        if moitor_log['c_time']:
+            moitor_log['c_time'] = moitor_log['c_time'].strftime('%Y-%m-%d %H:%M:%S')
+        log_list.append(moitor_log)
+    return log_list
