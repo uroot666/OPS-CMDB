@@ -9,7 +9,7 @@ from cmdb import idc_model
 
 from utils import mail
 
-INTERVAL = 5  #最近多长时间,单位秒
+INTERVAL = 100  #最近多长时间,单位秒
 DEFAULT_ADMIN = '2206081075@qq.com'   # 默认管理员邮箱
 
 #阀值

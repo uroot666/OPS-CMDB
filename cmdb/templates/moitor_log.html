@@ -32,7 +32,6 @@
     <table class="moitor-log table table-bordered table-condensed  table-striped">
         <thead>
         <tr>
-            <th>ID</th>
             <th>IP</th>
             <th>message</th>
             <th>使用人</th>
@@ -42,7 +41,6 @@
         </tr>
         </thead>
         <tbody>
-            
         </tbody>
     </table>
 {% endblock %}
@@ -96,7 +94,6 @@ jQuery(document).ready(function(){
                 },
                 "ajax": "/moitor/log/list/",
                 "columns": [
-                    {"data": "id"},
                     {"data": "ip"},
                     {"data": "message"},
                     {"data": "admin"}, 
@@ -114,12 +111,12 @@ jQuery(document).ready(function(){
             });
     
     //资产删除
-    jQuery('.asset').on('click', '.btn-delete', function() {
-        var url = '/asset/delete/' 
+    jQuery('.moitor-log').on('click', '.btn-delete', function() {
+        var url = '/moitor/log/delete/' 
         var id_dict = {"id":jQuery(this).data('id')};
         swal({ 
-            title: "确定删除吗？", 
-            text: "你将无法恢复资产条目！", 
+            title: "确定删除这条信息吗？", 
+            text: "你将无法恢复删除信息！", 
             type: "warning",
             showCancelButton: true, 
             confirmButtonColor: "#DD6B55",
@@ -130,9 +127,8 @@ jQuery(document).ready(function(){
           },
           function(isConfirm){ 
             if (isConfirm) { 
-                swal("删除！", "日志已经被删除。","success"); 
+                swal("删除！", "告警日志已经被删除。","success"); 
                 jQuery.post(url,id_dict);
-                jQuery("#edit-dailog").modal("hide");
                 table.api().ajax.reload();
             } else { 
               swal("取消！", "已经取消删除:)","error"); 

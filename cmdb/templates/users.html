@@ -151,6 +151,10 @@
                             <input type="password" class="form-control"  name="new_password">
                         </div>
                     </div>
+                    <!-- 清空表单 -->
+                    <div class="form-group">
+                        <input type="reset" name="reset" style="display: none;" />
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -235,10 +239,12 @@ jQuery(document).ready(function(){
         jQuery.post('/user/set/password/', params, function(response) { 
             if(response['code'] === 200){
                 jQuery("#set_password_dailog").modal("hide");
+                jQuery("input[type=reset]").trigger("click");
                 swal("密码修改成功！",'',"success")
             }
             else if(response['code'] === 400){
                 jQuery("#set_password_dailog").modal("hide");
+                jQuery("input[type=reset]").trigger("click");
                 sweetAlert("修改失败", "","error");
             }
         },

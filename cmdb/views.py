@@ -5,6 +5,8 @@ from flask import render_template
 from flask import request
 from flask import redirect
 from flask import session
+import datetime
+import os
 import json
 import re
 
@@ -103,25 +105,54 @@ def user_view_save():
         model.user_edit_save(uid, username, email, age)
         return redirect('/users/')
     else:
-        return render_template('user_view.html', uid=uid, username=username, age=age, email=email, error=error)
+        return render_template('user_view.html', uid=uid, username=username, age=age, email=email, error='error')
 
+# 修改用户密码
+@app.route('/user/set/password/', methods=['POST'])
+def user_set_password_view():
+    if session.get('user') is None:
+        return redirect('/')
+    req = request.form
+    dumps = model.user_set_password_view(req)
+    return json.dumps(dumps)
+
+# 上传文件处理
+@app.route('/upload/', methods=['POST'])
+def upload():
+    ALLOWED = set(['log']) # 允许后缀
+    upload_dir = os.path.join(app.config['basedir'], 'temp')  #存储路径
+    file = request.files['upload']  # 上传文件数据
+    if file:
+        result = model.upload(file, ALLOWED, upload_dir)
+    print(result)
+    return redirect('/log/')
 
 #查询分析日志的结果表单页面
 @app.route('/log/')
+def log_index():
+    if session.get('user') is None:
+        return redirect('/')
+    # top = request.form
+    topn = request.args.get('topn', '')
+    return render_template('log.html', topn = topn)
+
+# 返回分析日志的信息给页面
+@app.route('/log/list/')
 def log():
     if session.get('user') is None:
         return redirect('/')
     topn = request.args.get('topn', 10)
     topn = int(topn) if str(topn).isdigit() else 10
-    access_file_path = "access.log"
-    result = model.gethtml(access_file_path, topn)
-    return  render_template('log.html', logs=result)
+    result = model.gethtml('access.log', topn)
+    return json.dumps({"data" : result})
 
+# 退出登录
 @app.route('/logout/')
 def logout():
     session.clear()
     return redirect('/')
 
+# 返回静态资源的默认页面
 @app.route("/static/")
 def test():
     return render_template('index.html')
@@ -248,6 +279,7 @@ def monitor_host_create():
     model.monitor_host_create(req)
     return json.dumps({'code' : 200})
 
+
 # 返回资源状态信息
 @app.route('/monitor/host/list/')
 def monitor_host_list():
@@ -270,15 +302,12 @@ def moitor_log_list():
     moitor_log = model.get_moitor_log()
     return json.dumps({"data" : moitor_log})
 
-# 修改用户密码
-@app.route('/user/set/password/', methods=['POST'])
-def user_set_password_view():
-    if session.get('user') is None:
-        return redirect('/')
-    req = request.form
-    dumps = model.user_set_password_view(req)
-    return json.dumps(dumps)
-
+# 删除告警日志
+@app.route('/moitor/log/delete/', methods = ['POST'])
+def monitor_log_delete():
+    id = request.form.get('id', '')
+    req = model.monitor_log_delete(id)
+    return json.dumps(req)
 
 # if __name__ == '__main__':
 #     app.run(host='0.0.0.0', port=10000, debug=True)

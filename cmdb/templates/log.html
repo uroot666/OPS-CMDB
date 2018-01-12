@@ -1,49 +1,114 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
-    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <meta charset="UTF-8">
-    <title>日志展示</title>
-</head>
-<body>
-    <div class="container-fluid"><h1>日志展示</h1></div>
-    <div class="container-fluid">
-        <div class="col-md-12">
-            <a href="/log/?topn=10" class="btn btn-default btn-lg active" role="button">TOP10</a>
-            <a href="/log/?topn=20" class="btn btn-default btn-lg active" role="button">TOP20</a>
-            <a href="/log/?topn=30" class="btn btn-default btn-lg active" role="button">TOP30</a>
-            <a href="/log/?topn=40" class="btn btn-default btn-lg active" role="button">TOP40</a>
-    
-        </div>
+{% extends "layout.html" %}
+
+{% block title %}CMDB | 日志分析结果{% endblock %}
+
+{% block nav_moitor %}class="active"{% endblock %}
+
+{% block nav_log %}class="active"{% endblock %}
+
+
+{% block link %}
+<link href="/static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+<link href="/static/css/plugins/dataTables/dataTables.responsive.css" rel="stylesheet">
+<link href="/static/css/plugins/dataTables/dataTables.tableTools.min.css" rel="stylesheet">
+<link href="/static/css/animate.css" rel="stylesheet">
+<link href="/static/css/style.css" rel="stylesheet">
+<link href="/static/css/bootstrap-slider.css" rel="stylesheet">
+<link href="/static/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+<link href="/static/bootstrap-datepicker/css/bootstrap-datepicker.css" rel="stylesheet">
+
+{% endblock %}
+
+{% block breadcrumb %}
+    <li>
+        <a href="javascript:void(0)">监控</a>
+    </li>
+    <li>
+        <strong>日志分析结果</strong>
+    </li>
+{% endblock %}
+
+{% block connect %}
+    <div class="btn-group" role="group" aria-label="...">
+        <button type="button" class="btn btn-default"><a href="/log/?topn=10">TOP10</a></button>
+        <button type="button" class="btn btn-default"><a href="/log/?topn=20">TOP20</a></button>
+        <button type="button" class="btn btn-default"><a href="/log/?topn=30">TOP30</a></button>
+        <button type="button" class="btn btn-default"><a href="/log/?topn=40">TOP40</a></button>
     </div>
-    <br/>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-6">    
-                <table class="table table-bordered table-striped">
-                    <thead>
-                    <tr>
-                        <th >访问IP</th>
-                        <th>URL</th>
-                        <th>code</th>
-                        <th>次数</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for log in logs %}
-                    <tr class="success">
-                        <td>{{log[0][0]}}</td>
-                        <td>{{log[0][1]}}</td>
-                        <td>{{log[0][2]}}</td>
-                        <td>{{log[1]}}</td>
-                    </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div> 
-</body>
-<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
-<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <table class="moitor-log table table-bordered table-condensed  table-striped">
+        <thead>
+        <tr>
+            <th>IP</th>
+            <th>URL</th>
+            <th>状态码</th>
+            <th>访问次数</th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <form id="upload-form" action="/upload/" method="post" enctype="multipart/form-data" >
+    　　　<input type="file" id="upload" name="upload" />
+    　　　<input type="submit" value="上传文件" />
+    </form>
+{% endblock %}
+
+{% block script %}
+
+<script src="/static/js/plugins/dataTables/jquery.dataTables.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.responsive.js"></script>
+<script src="/static/js/plugins/dataTables/dataTables.tableTools.min.js"></script>
+<script type="text/javascript" src="/static/js/bootstrap-slider.js"></script>
+<script src="/static/js/plugins/sweetalert/sweetalert.min.js"></script>
+<script src="/static/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+<script src="/static/js/highcharts.js"></script>
+<script src="/static/bootstrap-datepicker/locales/bootstrap-datepicker.zh-CN.min.js"></script>
+{% endblock %}
+
+{% block js %}
+
+//databable 显示告警日志
+jQuery(document).ready(function(){
+    var table = jQuery('.moitor-log').dataTable({
+        "order": [[3, "desc" ]],  //从第0行还是，根据第三列倒序排列
+        language: {
+            "sProcessing": "处理中...",
+            "sLengthMenu": "显示 _MENU_ 项结果",
+            "sZeroRecords": "没有匹配结果",
+            "sInfo": "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+            "sInfoEmpty": "显示第 0 至 0 项结果，共 0 项",
+            "sInfoFiltered": "(由 _MAX_ 项结果过滤)",
+            "sInfoPostFix": "",
+            "sSearch": "搜索:",
+            "sUrl": "",
+            "sEmptyTable": "表中数据为空",
+            "sLoadingRecords": "载入中...",
+            "sInfoThousands": ",",
+            "oPaginate": {
+                "sFirst": "首页",
+                "sPrevious": "上页",
+                "sNext": "下页",
+                "sLast": "末页"
+                },
+            "oAria": {
+                "sSortAscending": ": 以升序排列此列",
+                "sSortDescending": ": 以降序排列此列"
+                }
+            },
+                responsive: true,
+                "dom": '<"top"i>rt<"bottom"flp><"clear">',
+                "tableTools": {
+                    "sSwfPath":  "/static/js/plugins/dataTables/swf/copy_csv_xls_pdf.swf"
+                },
+                "ajax": "/log/list/?topn={{topn}}",
+                "columns": [
+                    {"data": "ip"},
+                    {"data": "url"},
+                    {"data": "code"}, 
+                    {"data":"count"},
+                    ]
+            });
+    
+});
+{% endblock %}

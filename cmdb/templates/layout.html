@@ -46,6 +46,11 @@
                         <a href="/moitor/log/">报警日志</a>
                     </li>
                 </ul>
+                <ul class="nav nav-second-level collapse">
+                    <li {% block nav_log %}{% endblock %}>
+                        <a href="/log/">分析日志</a>
+                    </li>
+                </ul>
             </li>
             <li {% block nav_user %}{% endblock %} >
                 <a href="/users/"><i class="fa fa-user"></i> <span class="nav-label">用户</span> <span class="fa arrow"></span></a>

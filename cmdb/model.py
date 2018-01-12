@@ -2,6 +2,7 @@
 import json
 import pymysql
 import datetime
+import os
 
 from . import gconf
 from . import dbutils
@@ -16,7 +17,7 @@ SQL_GET_USER_BY_ID = 'select id,name,age,email from user where id = %s'
 SQL_GET_USER_BY_ID_COLUMS = ("uid", "username", "age", "email")
 SQL_USER_EDIT_SAVE = 'update user set name = %s, age = %s, email = %s where id = %s'
 SQL_USER_DELETE = 'delete from user where id = %s'
-SQL_USER_CREATE = 'insert into user(name, password, age, email) value( %s, md5(%s), %s, %s)'
+SQL_USER_CREATE = 'insert into user(name, password, age, email) value( %s, %s, %s, %s)'
 
 SQL_MONITOR_HOST_CREATE = 'insert into monitor_host(ip, cpu, mem, disk, m_time, r_time) value(%s, %s, %s, %s, %s, %s)'
 SQL_MONITOR_HOST_LIST = 'select ip, cpu, mem, disk, m_time from monitor_host where ip=%s and r_time >= %s order by m_time asc'
@@ -86,10 +87,16 @@ def gethtml(src, topn=10):
         stat_dict[key] = stat_dict.setdefault(key, 0) + 1
     fhandler.close()
 
-    result = sorted(stat_dict.items(), key=lambda x:x[1])
-    print(topn)
-    return result[: -topn - 1:-1]
-    print(topn)
+    results = sorted(stat_dict.items(), key=lambda x:x[1])
+    results = results[: -topn - 1:-1]
+    RESULT__COLUMS = ('ip', 'url', 'code','count')
+    req = []
+    for result in results:
+        if result:
+            result = [result[0][0], result[0][1], result[0][2], result[1]]
+            result = dict(zip(RESULT__COLUMS, result))
+        req.append(result)
+    return req
 
 def user_del(uid):
     dbutils.user_db_operating(SQL_USER_DELETE, False, (uid,))
@@ -150,7 +157,7 @@ def user_edit_save(id, username, email, age):
 
 #将添加的用户信息写入到json文件中
 def user_create(username, password, age, email):
-    dbutils.user_db_operating(SQL_USER_CREATE, False, (username, password, age, email))
+    dbutils.user_db_operating(SQL_USER_CREATE, False, (username, encryption.md5_str(password), age, email))
 
     # db = pymysql.connect(**config.config)
     # cursor = db.cursor()
@@ -178,7 +185,6 @@ def monitor_host_create(req):
 # 返回监控数据（cpu，disk, mem）
 def monitor_host_list(ip):
     start_time = (datetime.datetime.now() - datetime.timedelta(days = 10)).strftime('%Y-%m-%d %H:%M:%S')
-    print(start_time)
     rt_list = dbutils.idc_db_operating(SQL_MONITOR_HOST_LIST, True, (ip,start_time))
     categoy_list, cpu_list, disk_list, mem_list = [], [], [], []
     for line in rt_list:
@@ -221,14 +227,14 @@ def monitor_host_list(ip):
     return result
 
 def user_set_password_view(req):
-    sql1 = "select * from user where id=%s and password=md5(%s)"
-    sql2 = "update user set password=md5(%s) where id = %s"
+    sql1 = "select * from user where id=%s and password=%s"
+    sql2 = "update user set password=%s where id = %s"
     line = []
     for key in ('uid', 'old_password', 'new_password'):
         line.append(req.get(key, ''))
-    cnt, rt_list = dbutils.user_db_operating(sql1, False, (line[0],line[1]))
+    cnt, rt_list = dbutils.user_db_operating(sql1, False, (line[0],encryption.md5_str(line[1])))
     if cnt == 1:
-        dbutils.user_db_operating(sql2, False, (line[2],line[0]))
+        dbutils.user_db_operating(sql2, False, (encryption.md5_str(line[2]),line[0]))
         return {"code":200}
     else:
         return {"code":400}
@@ -245,3 +251,26 @@ def get_moitor_log():
             moitor_log['c_time'] = moitor_log['c_time'].strftime('%Y-%m-%d %H:%M:%S')
         log_list.append(moitor_log)
     return log_list
+
+SQL_MONITOR_LOG_DELETE = "update alert set type=2,d_time=%s where id = %s"
+def monitor_log_delete(id):
+    d_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    dbutils.idc_db_operating(SQL_MONITOR_LOG_DELETE, False, (d_time, id))
+    return {'code':200}
+
+# 判断上传文件是否符合规范
+def upload_allowed_file(ALLOWED_EXTENSIONS, filname):
+    if '.' in filname and filname.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS:
+        return True
+
+# 上传文件处理函数
+def upload(file, ALLOWED, save_path): #file文件数据流，ALLOWED允许后缀，save_path保存路径
+    result_file = ''
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+    filename = file.filename
+    if upload_allowed_file(ALLOWED, filename):
+        file_name = datetime.datetime.now().strftime("%Y%m%d%H%M%S") + '.' + filename.rsplit('.', 1)[1] #文件新名字
+        result_file = os.path.join(save_path, file_name)
+        file.save(result_file)
+    return result_file

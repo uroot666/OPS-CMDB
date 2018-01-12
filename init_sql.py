@@ -42,22 +42,23 @@ SQL_CREATE_ASSET='''create table cmdb.asset (
 
 SQL_CREATE_MONITOR_HOST = '''create table cmdb.monitor_host(
     id int primary key auto_increment,
-    ip varchar(128),
-    cpu float,
-    mem float,
-    disk float,
-    m_time datetime,
-    r_time datetime
+    ip varchar(128) comment '客户端IP',
+    cpu float comment 'cpu使用率',
+    mem float comment '内存使用率',
+    disk float comment '硬盘使用率',
+    m_time datetime comment '客户端发送时间',
+    r_time datetime comment '服务器写入数据库时间'
 )engine=innodb default charset=utf8;'''
 
 SQL_ALERT_CREATE = '''create table alert(
     id int primary key auto_increment,
-    ip varchar(128),
-    message varchar(128),
-    admin varchar(64),
-    status int,
-    type int,
-    c_time datetime
+    ip varchar(128) comment '告警客户端IP',
+    message varchar(128) comment '告警内容',
+    admin varchar(64) comment '资源使用人(管理员)',
+    status int comment '状态，1表示未处理，0表示已处理',
+    type int comment '类型，1表示显示，2表示逻辑删除',
+    c_time datetime comment '告警时间',
+    d_time datetime comment '逻辑删除时间'
 )engine=innodb default charset=utf8;'''
 
 db = pymysql.connect(**config.config)
