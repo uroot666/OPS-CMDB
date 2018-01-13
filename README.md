@@ -4,6 +4,7 @@
 2. 数据库使用mysql,使用pymysql连接
 3. 前端框架使用bootstrap
 4. requests模块
+5. paramiko 远程执行命令模块 
 
 ## cmdb agent
 1. 使用了psutil, requests模块

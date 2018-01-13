@@ -29,12 +29,23 @@
 {% endblock %}
 
 {% block connect %}
-    <div class="btn-group" role="group" aria-label="...">
-        <button type="button" class="btn btn-default"><a href="/log/?topn=10">TOP10</a></button>
-        <button type="button" class="btn btn-default"><a href="/log/?topn=20">TOP20</a></button>
-        <button type="button" class="btn btn-default"><a href="/log/?topn=30">TOP30</a></button>
-        <button type="button" class="btn btn-default"><a href="/log/?topn=40">TOP40</a></button>
-    </div>
+    <form action="/upload/" role="form" class="form-inline" enctype="multipart/form-data" method="post" >
+        <div class="form-group" >
+            <label class="sr-only">日志文件</label>
+            <input type="file" id="upload" name="upload" />
+        </div>
+        <button class="btn btn-white" type="submit">上传</button>
+    
+    {% for select_topn in ['10', '20', '30', '40'] %}
+        <a href="/log/?topn={{select_topn}}"
+        {% if select_topn == topn %}
+            class="btn btn-white active"
+        {% else %}
+            class="btn btn-white"
+        {% endif %}
+        role="button">TOP {{select_topn}}</a>
+    {% endfor %}
+    </form>
     <table class="moitor-log table table-bordered table-condensed  table-striped">
         <thead>
         <tr>
@@ -47,10 +58,6 @@
         <tbody>
         </tbody>
     </table>
-    <form id="upload-form" action="/upload/" method="post" enctype="multipart/form-data" >
-    　　　<input type="file" id="upload" name="upload" />
-    　　　<input type="submit" value="上传文件" />
-    </form>
 {% endblock %}
 
 {% block script %}

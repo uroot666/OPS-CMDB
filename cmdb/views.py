@@ -119,7 +119,7 @@ def user_set_password_view():
 # 上传文件处理
 @app.route('/upload/', methods=['POST'])
 def upload():
-    ALLOWED = set(['log']) # 允许后缀
+    ALLOWED = set(['log', 'py']) # 允许后缀
     upload_dir = os.path.join(app.config['basedir'], 'temp')  #存储路径
     file = request.files['upload']  # 上传文件数据
     if file:
