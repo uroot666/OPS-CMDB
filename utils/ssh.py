@@ -50,8 +50,7 @@ def upload_files(host, port, username, password, files=[]):
 
 
 if __name__ == "__main__":
-    files = [(r'''C:\Users\Administrator\Documents\GitHub\cmdb\agent\cmdb_agent.py''', "/tmp/")]
-    print(upload_files("192.168.174.131", 22, "root", "liangbiao-1", files))
-    cmds = ["id", "who", "who"]
-    print(exec_cmds("192.168.174.131", 22, "root", "liangbiao-1", cmds))
-=
+    files = [(r'''C:\Users\uroot\PycharmProjects\flask_demo\agent\cmdb_agent.py''', '/tmp/cmdb_agent.py')]
+    print(upload_files("192.168.198.130", 22, "root", "liangbiao-1", files))
+    # cmds = ["id", "who", "who"]
+    # print(exec_cmds("192.168.174.131", 22, "root", "liangbiao-1", cmds))
