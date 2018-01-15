@@ -4,6 +4,7 @@
 import time
 from datetime import datetime
 
+import socket
 import sys
 import os
 import signal
@@ -14,20 +15,21 @@ import requests
 
 loger = logging.getLogger(__name__)
 
-INTERVAL = 3
+INTERVAL = 60
 
 URL = 'http://%s:%s/monitor/host/create/'
 
 # 获取网卡IP
+# 通过 UDP 获取本机 IP
 def get_addr():
-    addr = '0.0.0.0'
-    nics = psutil.net_if_addrs()
-    for k,v in nics.items():
-        for item in v:
-            if item[0] == 2 and not item[1]=='127.0.0.1':
-                addr = item[1]
-                break
-    return addr
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(('8.8.8.8', 80))
+        ip = s.getsockname()[0]
+    finally:
+        s.close()
+ 
+    return ip
 
 # 返回系统信息
 def monitor(server_ip, server_port):

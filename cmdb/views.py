@@ -31,7 +31,7 @@ def login():
         return redirect('/users/')
     username = request.form.get('username', '')
     password = request.form.get('password', '')
-    user = model.validate_login(username, password)
+    user = model.User.validate_login(username, password)
     if user:
         session['user'] = user
         return redirect('/users/')
@@ -43,7 +43,7 @@ def login():
 def users():
     if session.get('user') is None:
         return redirect('/')
-    user_all = model.get_users()   
+    user_all = model.User.get_list()   
     return render_template("users.html", user_all=user_all)
 
 # 添加用户界面
@@ -66,7 +66,8 @@ def user_create():
         return json.dumps({'code' : 400, 'error' : 'error'})
 
     else:
-        model.user_create(username, password, int(age), email)
+        user = model.User(username, password, int(age), email)
+        user.save()
         return json.dumps({'code' : 200})
 
 
@@ -76,8 +77,8 @@ def userdel():
     if session.get('user') is None:
         return redirect('/')
     id = int(request.args.get('id', ''))
-    jud = model.user_del(id)
-    user_all = model.get_users()
+    jud = model.User.delete(id)
+    user_all = model.User.get_list()
     if jud:
         return redirect('/users/')
     else:
@@ -88,7 +89,7 @@ def userdel():
 def user_view():
     if session.get('user') is None:
         return redirect('/')
-    user = model.get_user_by_id(request.args.get('id', 0))
+    user = model.User.get_user_by_id(request.args.get('id', 0))
     return render_template('user_view.html', uid=user.get("uid"), username=user.get("username"), age=user.get("age"), email=user.get("email"))
 
 # 保存修改的用户信息
@@ -262,7 +263,7 @@ def idc_view_save():
 def idc_delete():
     id = request.args.get('id', '0')
     if re.match(r'\d+', id):
-        stu = idc_model.idcroom_delete(int(id))
+        idc_model.idcroom_delete(int(id))
         return redirect('/idc_list/')
 
 ####################### agent http接口 ##########################

@@ -8,121 +8,65 @@ from . import gconf
 from . import dbutils
 from utils import encryption
 
-#sql template
-SQL_VALIDATE_LOGIN = 'select id,name from user where name = %s and password = %s'
-SQL_VALIDATE_LOGIN_COLUMS = ("id", "name")
-SQL_USER_LIST = 'select id, name, age, email from user'
-SQL_USER_LIST_COLUMS = ("id", "username", "age", "email")
-SQL_GET_USER_BY_ID = 'select id,name,age,email from user where id = %s'
-SQL_GET_USER_BY_ID_COLUMS = ("uid", "username", "age", "email")
 SQL_USER_EDIT_SAVE = 'update user set name = %s, age = %s, email = %s where id = %s'
-SQL_USER_DELETE = 'delete from user where id = %s'
-SQL_USER_CREATE = 'insert into user(name, password, age, email) value( %s, %s, %s, %s)'
+
+
 
 SQL_MONITOR_HOST_CREATE = 'insert into monitor_host(ip, cpu, mem, disk, m_time, r_time) value(%s, %s, %s, %s, %s, %s)'
 SQL_MONITOR_HOST_LIST = 'select ip, cpu, mem, disk, m_time from monitor_host where ip=%s and r_time >= %s order by m_time asc'
 
-#读出用户数据，并转换成列表返回
-def get_users():
-    cnt, users = dbutils.user_db_operating(SQL_USER_LIST, True)
-    return [dict(zip(SQL_USER_LIST_COLUMS, user)) for user in users]
-    # db = pymysql.connect(**config.config)
-    # cursor = db.cursor()
-    # cursor.execute(SQL_USER_LIST)
-    # users = cursor.fetchall()
-    # cursor.close()
-    # db.close()
-    # return [dict(zip(SQL_USER_LIST_COLUMS, user)) for user in users]
+SET_PASSWORD_SELECT = "select * from user where id=%s and password=%s"
+SET_PASSWORD_UPDATE = "update user set password=%s where id = %s"
 
+class User(object):
+    SQL_VALIDATE_LOGIN = 'select id,name from user where name = %s and password = %s'
+    SQL_VALIDATE_LOGIN_COLUMS = ("id", "name")
+    SQL_USER_LIST = 'select id, name, age, email from user'
+    SQL_USER_LIST_COLUMS = ("id", "username", "age", "email")
+    SQL_GET_USER_BY_ID = 'select id,name,age,email from user where id = %s'
+    SQL_GET_USER_BY_ID_COLUMS = ("uid", "username", "age", "email")
+    SQL_USER_CREATE = 'insert into user(name, password, age, email) value( %s, %s, %s, %s)'
+    SQL_USER_DELETE = 'delete from user where id = %s'
 
-    # fh = open(gconf.USER_DATA_PATH, 'r')
-    # users = json.loads(fh.read())
-    # print(users)
-    # fh.close()
-    # return users
+    def __init__(self, username, password, age, email):
+        self.username = username
+        self.password = password
+        self.age = age
+        self.email = email
+        
+    # 查询数据库比对用户密码
+    @classmethod
+    def validate_login(cls, username, password):
+        cnt, record = dbutils.user_db_operating(cls.SQL_VALIDATE_LOGIN, True, (username, encryption.md5_str(password)))
+        if len(record) != 0:
+            record = record[0]
+        return dict(zip(cls.SQL_VALIDATE_LOGIN_COLUMS, record)) if record else None
 
-# 查询数据库比对用户密码
-def validate_login(username, password):
-    cnt, record = dbutils.user_db_operating(SQL_VALIDATE_LOGIN, True, (username, encryption.md5_str(password)))
-    if len(record) != 0:
-        record = record[0]
-    return dict(zip(SQL_VALIDATE_LOGIN_COLUMS, record)) if record else None
+    #读出用户数据，并转换成列表返回
+    @classmethod
+    def get_list(cls):
+        cnt, users = dbutils.user_db_operating(cls.SQL_USER_LIST, True)
+        return [dict(zip(cls.SQL_USER_LIST_COLUMS, user)) for user in users]
 
-    # db = pymysql.connect(**config.config)
-    # cursor = db.cursor()
-    # cursor.execute(SQL_VALIDATE_LOGIN,(username, password ))
-    # record = cursor.fetchone()
-    # cursor.close()
-    # db.close()
-    # return  dict(zip(SQL_VALIDATE_LOGIN_COLUMS, record)) if record else None
-    
-    # 循环验证用户数据中用户及密码
-    # users = get_users()
-    # for user in users:
-    #     if  user.get('username') == username and user.get('password') == password:
-    #         return user
-    # return None
+    # 根据id查询出用户信息
+    @classmethod
+    def get_user_by_id(cls, uid):
+        cnt, record = dbutils.user_db_operating(cls.SQL_GET_USER_BY_ID, True, (uid,))
+        if len(record) != 0:
+            record = record[0]
+        return  dict(zip(cls.SQL_GET_USER_BY_ID_COLUMS, record)) if record else {}
 
-def get_user_by_id(uid):
-    cnt, record = dbutils.user_db_operating(SQL_GET_USER_BY_ID, True, (uid,))
-    if len(record) != 0:
-        record = record[0]
-    return  dict(zip(SQL_GET_USER_BY_ID_COLUMS, record)) if record else {}
+    # 根据id删除用户
+    @classmethod
+    def delete(cls, uid):
+        dbutils.user_db_operating(cls.SQL_USER_DELETE, False, (uid,))
+        return True
 
-    # db = pymysql.connect(**config.config)
-    # cursor = db.cursor()
-    # cursor.execute(SQL_GET_USER_BY_ID,(uid,))
-    # record = cursor.fetchone()
-    # cursor.close()
-    # db.close()
-    # return  dict(zip(SQL_GET_USER_BY_ID_COLUMS, record)) if record else {}
+    # 添加用户
+    def save(self):
+        dbutils.user_db_operating(self.SQL_USER_CREATE, False, (self.username, encryption.md5_str(self.password), self.age, self.email))
 
-#分析log文件并返回倒数topn行
-def gethtml(src, topn=10):
-    stat_dict = {}
-    fhandler = open(src, "r")
-    for line in fhandler:
-        line_list = line.split()
-        key = (line_list[0], line_list[6], line_list[8])
-        stat_dict[key] = stat_dict.setdefault(key, 0) + 1
-    fhandler.close()
-
-    results = sorted(stat_dict.items(), key=lambda x:x[1])
-    results = results[: -topn - 1:-1]
-    RESULT__COLUMS = ('ip', 'url', 'code','count')
-    req = []
-    for result in results:
-        if result:
-            result = [result[0][0], result[0][1], result[0][2], result[1]]
-            result = dict(zip(RESULT__COLUMS, result))
-        req.append(result)
-    return req
-
-def user_del(uid):
-    dbutils.user_db_operating(SQL_USER_DELETE, False, (uid,))
-    return True
-    # db = pymysql.connect(**config.config)
-    # cursor = db.cursor()
-    # cursor.execute(SQL_USER_DELETE,(uid,))
-    # db.commit()
-    # cursor.close()
-    # db.close()
-    # return True
-
-    # users = get_users()
-    # index = 0
-    # for user_dict in users:
-    #     if user_dict.get('id') == id:
-    #         users.pop(index)
-    #         users = json.dumps(users)
-    #         fh = open(gconf.USER_DATA_PATH, 'w')
-    #         fh.write(users)
-    #         fh.close
-    #         return True, user_dict.get("username")
-    #     else:
-    #         index = index + 1
-    # return None
-
+# 判断用户是否存在
 def user_edit_jud(id, username, age):
     return True
 
@@ -130,50 +74,17 @@ def user_edit_save(id, username, email, age):
     dbutils.user_db_operating(SQL_USER_EDIT_SAVE, False, (username, age, email, id))
     return True
 
-    # db = pymysql.connect(**config.config)
-    # cursor = db.cursor()
-    # cursor.execute(SQL_USER_EDIT_SAVE,(username, age, id))
-    # db.commit()
-    # cursor.close()
-    # db.close()
-    # return True
-
-    # users = get_users()
-    # index = 0
-    # for user_dict in users:
-    #     if user_dict.get('id') == id:
-    #         users[index]["username"] = username
-    #         users[index]["password"] = password
-    #         fh = open(gconf.USER_DATA_PATH, 'w')
-    #         users = json.dumps(users)
-    #         fh.write(users)
-    #         fh.close
-    #         return True
-    #     else:
-    #         index = index + 1
-    # return  None
-    
-
-
-#将添加的用户信息写入到json文件中
-def user_create(username, password, age, email):
-    dbutils.user_db_operating(SQL_USER_CREATE, False, (username, encryption.md5_str(password), age, email))
-
-    # db = pymysql.connect(**config.config)
-    # cursor = db.cursor()
-    # cursor.execute(SQL_USER_CREATE,(username, password, age))
-    # db.commit()
-    # cursor.close()
-    # db.close()
-
-
-    # temp_user_all = get_users()
-    # add_user = {"id":temp_user_all[len(temp_user_all) - 1].get('id') + 1, "username":username, "password":password}
-    # temp_user_all.append(add_user)
-    # user_all = json.dumps(temp_user_all)
-    # fh = open(gconf.USER_DATA_PATH, 'w')
-    # fh.write(user_all)
-    # fh.close
+# 修改用户密码
+def user_set_password_view(req):
+    line = []
+    for key in ('uid', 'old_password', 'new_password'):
+        line.append(req.get(key, ''))
+    cnt, rt_list = dbutils.user_db_operating(SET_PASSWORD_SELECT, False, (line[0],encryption.md5_str(line[1])))
+    if cnt == 1:
+        dbutils.user_db_operating(SET_PASSWORD_UPDATE, False, (encryption.md5_str(line[2]),line[0]))
+        return {"code":200}
+    else:
+        return {"code":400}
 
 def monitor_host_create(req):
     values = []
@@ -226,19 +137,6 @@ def monitor_host_list(ip):
     # }
     return result
 
-def user_set_password_view(req):
-    sql1 = "select * from user where id=%s and password=%s"
-    sql2 = "update user set password=%s where id = %s"
-    line = []
-    for key in ('uid', 'old_password', 'new_password'):
-        line.append(req.get(key, ''))
-    cnt, rt_list = dbutils.user_db_operating(sql1, False, (line[0],encryption.md5_str(line[1])))
-    if cnt == 1:
-        dbutils.user_db_operating(sql2, False, (encryption.md5_str(line[2]),line[0]))
-        return {"code":200}
-    else:
-        return {"code":400}
-
 # 查询出所有未处理的告警记录
 SQL_GET_MOITOR_LOG = "select id,ip,message,admin,status,type,c_time from alert where type=1"
 SQL_GET_MOITOR_LOG_COLUMS = ('id', 'ip', 'message', 'admin', 'status', 'type', 'c_time')
@@ -274,3 +172,24 @@ def upload(file, ALLOWED, save_path): #file文件数据流，ALLOWED允许后缀
         result_file = os.path.join(save_path, file_name)
         file.save(result_file)
     return result_file
+
+#分析log文件并返回倒数topn行
+def gethtml(src, topn=10):
+    stat_dict = {}
+    fhandler = open(src, "r")
+    for line in fhandler:
+        line_list = line.split()
+        key = (line_list[0], line_list[6], line_list[8])
+        stat_dict[key] = stat_dict.setdefault(key, 0) + 1
+    fhandler.close()
+
+    results = sorted(stat_dict.items(), key=lambda x:x[1])
+    results = results[: -topn - 1:-1]
+    RESULT__COLUMS = ('ip', 'url', 'code','count')
+    req = []
+    for result in results:
+        if result:
+            result = [result[0][0], result[0][1], result[0][2], result[1]]
+            result = dict(zip(RESULT__COLUMS, result))
+        req.append(result)
+    return req
