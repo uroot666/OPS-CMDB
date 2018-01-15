@@ -8,39 +8,38 @@ from . import gconf
 from . import dbutils
 from utils import encryption
 
-SQL_USER_EDIT_SAVE = 'update user set name = %s, age = %s, email = %s where id = %s'
-
-
-
 SQL_MONITOR_HOST_CREATE = 'insert into monitor_host(ip, cpu, mem, disk, m_time, r_time) value(%s, %s, %s, %s, %s, %s)'
 SQL_MONITOR_HOST_LIST = 'select ip, cpu, mem, disk, m_time from monitor_host where ip=%s and r_time >= %s order by m_time asc'
 
-SET_PASSWORD_SELECT = "select * from user where id=%s and password=%s"
-SET_PASSWORD_UPDATE = "update user set password=%s where id = %s"
-
 class User(object):
+    KEY = 'id'
     SQL_VALIDATE_LOGIN = 'select id,name from user where name = %s and password = %s'
     SQL_VALIDATE_LOGIN_COLUMS = ("id", "name")
     SQL_USER_LIST = 'select id, name, age, email from user'
     SQL_USER_LIST_COLUMS = ("id", "username", "age", "email")
     SQL_GET_USER_BY_ID = 'select id,name,age,email from user where id = %s'
+    SQL_GET_USER_BY_KEY = 'select id,name,age,email from user where {key} = %s'
+    SQL_GET_USER_BY_KEY_COLUMS = ("uid", "username", "age", "email")
     SQL_GET_USER_BY_ID_COLUMS = ("uid", "username", "age", "email")
     SQL_USER_CREATE = 'insert into user(name, password, age, email) value( %s, %s, %s, %s)'
-    SQL_USER_DELETE = 'delete from user where id = %s'
+    SQL_USER_DELETE_BY_KEY = 'delete from user where {key} = %s'
+    SQL_USER_EDIT_SAVE = 'update user set name = %s, age = %s, email = %s where id = %s'
+    SET_PASSWORD_SELECT = "select * from user where id=%s and password=%s"
+    SET_PASSWORD_UPDATE = "update user set password=%s where id = %s"
 
-    def __init__(self, username, password, age, email):
-        self.username = username
-        self.password = password
+
+    def __init__(self, id, username, password, age, email):
+        self.id = id
+        self.username = username.strip()
+        self.password = password.strip()
         self.age = age
-        self.email = email
+        self.email = email.strip()
         
     # 查询数据库比对用户密码
     @classmethod
     def validate_login(cls, username, password):
         cnt, record = dbutils.user_db_operating(cls.SQL_VALIDATE_LOGIN, True, (username, encryption.md5_str(password)))
-        if len(record) != 0:
-            record = record[0]
-        return dict(zip(cls.SQL_VALIDATE_LOGIN_COLUMS, record)) if record else None
+        return dict(zip(cls.SQL_VALIDATE_LOGIN_COLUMS, record[0])) if record else None
 
     #读出用户数据，并转换成列表返回
     @classmethod
@@ -58,33 +57,40 @@ class User(object):
 
     # 根据id删除用户
     @classmethod
-    def delete(cls, uid):
-        dbutils.user_db_operating(cls.SQL_USER_DELETE, False, (uid,))
+    def delete_by_key(cls, value, key=None):
+        sql = cls.SQL_USER_DELETE_BY_KEY.format(key=cls.KEY if key is None else key)
+        dbutils.user_db_operating(sql, False, (value,))
         return True
+
+    @classmethod
+    def get_by_key(cls, value, key=None):
+        sql = cls.SQL_GET_USER_BY_KEY.format(key=cls.KEY if key is None else key)
+        _, record = dbutils.user_db_operating(sql, True, (value,))
+        if len(record) != 0:
+            record = record[0]
+        return  dict(zip(cls.SQL_GET_USER_BY_KEY_COLUMS, record)) if record else {}
+
+    # 判断用户是否存在
+    @classmethod
+    def validate_user_modify(cls, id, username, age):
+        return True
+
+    def user_edit_save(self):
+        dbutils.user_db_operating(self.SQL_USER_EDIT_SAVE, False, (self.username, self.age, self.email, self.id))
 
     # 添加用户
     def save(self):
         dbutils.user_db_operating(self.SQL_USER_CREATE, False, (self.username, encryption.md5_str(self.password), self.age, self.email))
 
-# 判断用户是否存在
-def user_edit_jud(id, username, age):
-    return True
+    # 修改密码，判断旧密码是否正确
+    @classmethod
+    def judgment_old_password(cls, uid, old_password):
+        cnt, rt_list = dbutils.user_db_operating(cls.SET_PASSWORD_SELECT, False, (uid,encryption.md5_str(old_password)))
+        return cnt > 0
 
-def user_edit_save(id, username, email, age):
-    dbutils.user_db_operating(SQL_USER_EDIT_SAVE, False, (username, age, email, id))
-    return True
-
-# 修改用户密码
-def user_set_password_view(req):
-    line = []
-    for key in ('uid', 'old_password', 'new_password'):
-        line.append(req.get(key, ''))
-    cnt, rt_list = dbutils.user_db_operating(SET_PASSWORD_SELECT, False, (line[0],encryption.md5_str(line[1])))
-    if cnt == 1:
-        dbutils.user_db_operating(SET_PASSWORD_UPDATE, False, (encryption.md5_str(line[2]),line[0]))
-        return {"code":200}
-    else:
-        return {"code":400}
+    # 修改密码，更新密码
+    def set_password(self):
+        dbutils.user_db_operating(self.SET_PASSWORD_UPDATE, False, (encryption.md5_str(self.password), self.id))
 
 def monitor_host_create(req):
     values = []

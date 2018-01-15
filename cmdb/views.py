@@ -66,7 +66,7 @@ def user_create():
         return json.dumps({'code' : 400, 'error' : 'error'})
 
     else:
-        user = model.User(username, password, int(age), email)
+        user = model.User('', username, password, int(age), email)
         user.save()
         return json.dumps({'code' : 200})
 
@@ -77,7 +77,7 @@ def userdel():
     if session.get('user') is None:
         return redirect('/')
     id = int(request.args.get('id', ''))
-    jud = model.User.delete(id)
+    jud = model.User.delete_by_key(id, 'id')
     user_all = model.User.get_list()
     if jud:
         return redirect('/users/')
@@ -93,17 +93,18 @@ def user_view():
     return render_template('user_view.html', uid=user.get("uid"), username=user.get("username"), age=user.get("age"), email=user.get("email"))
 
 # 保存修改的用户信息
-@app.route('/user/view_save/')
+@app.route('/user/view_save/', methods=["POST"])
 def user_view_save():
     if session.get('user') is None:
         return redirect('/')
-    uid = int(request.args.get('uid'))
-    username = request.args.get('username')
-    age = request.args.get('age')
-    email = request.args.get('email')
-    ok = model.user_edit_jud(uid, username, age)
+    uid = int(request.form.get('uid'))
+    username = request.form.get('username')
+    age = request.form.get('age')
+    email = request.form.get('email')
+    user = model.User(uid, username, '', age, email)
+    ok = model.User.validate_user_modify(uid, username, age)
     if ok:
-        model.user_edit_save(uid, username, email, age)
+        user.user_edit_save()
         return redirect('/users/')
     else:
         return render_template('user_view.html', uid=uid, username=username, age=age, email=email, error='error')
@@ -113,9 +114,16 @@ def user_view_save():
 def user_set_password_view():
     if session.get('user') is None:
         return redirect('/')
-    req = request.form
-    dumps = model.user_set_password_view(req)
-    return json.dumps(dumps)
+    uid = request.form.get('uid')
+    old_password = request.form.get('old_password')
+    new_password = request.form.get('new_password')
+    if model.User.judgment_old_password(uid, old_password):
+        user = model.User(uid, '', new_password, '', '')
+        user.set_password()
+        return json.dumps({"code":200})
+    else:
+        return json.dumps({"code":400})
+
 
 # 上传文件处理
 @app.route('/upload/', methods=['POST'])
@@ -307,6 +315,7 @@ def moitor_log_list():
 @app.route('/moitor/log/delete/', methods = ['POST'])
 def monitor_log_delete():
     id = request.form.get('id', '')
+    print(id)
     req = model.monitor_log_delete(id)
     return json.dumps(req)
 
