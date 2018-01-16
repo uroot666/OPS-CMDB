@@ -646,13 +646,13 @@ jQuery(document).ready(function(){
         autoclose: true
     });
 
-    //资产添加
+    //打开远程执行dailog
     jQuery('.asset').on('click', '.btn-ssh', function() {
         var host_id = jQuery(this).data('id');
         jQuery("[name=id]").val(host_id);
         jQuery("#ssh-dailog").modal("show")
     });
-
+    //提交远程执行信息
     jQuery('.btn-ssh-save').on('click', function () {
         var params = jQuery(".form-ssh").serializeArray();
         jQuery.post('/host/ssh/', params, function(response) { 
@@ -669,7 +669,7 @@ jQuery(document).ready(function(){
         },
         'json')
     });
-
+    //清空ssh_dailog的form表单
     jQuery("#ssh-dailog").on("hidden.bs.modal", function() {
         jQuery("input[type=reset]").trigger("click");
     });
