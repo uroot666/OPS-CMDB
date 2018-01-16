@@ -11,7 +11,6 @@ import json
 import re
 
 from . import model
-from . import idc_model
 
 from cmdb import app
 
@@ -133,7 +132,7 @@ def upload():
     file = request.files['upload']  # 上传文件数据
     if file:
         result = model.upload(file, ALLOWED, upload_dir)
-    print(result)
+        print(result)
     return redirect('/log/')
 
 #查询分析日志的结果表单页面
@@ -152,7 +151,8 @@ def log():
         return redirect('/')
     topn = request.args.get('topn', 10)
     topn = int(topn) if str(topn).isdigit() else 10
-    result = model.gethtml('access.log', topn)
+    result = model.get_log_analysis(topn)
+    # result = model.gethtml('access.log', topn)
     return json.dumps({"data" : result})
 
 # 退出登录
@@ -175,13 +175,13 @@ def asset_index():
     if session.get('user') is None:
         return redirect('/')
     # 查询出所有机房的列表，返回到资产管理页面
-    engineroom_all = idc_model.engineroom_list()
+    engineroom_all = model.engineroom_list()
     return render_template('asset.html', engineroom_all=engineroom_all)
 
 # 返回资产信息
 @app.route("/asset/list/")
 def asset_list():
-    assets = idc_model.get_asset()
+    assets = model.get_asset()
     return json.dumps({"data": assets})
 
 # 保存添加资产信息
@@ -190,14 +190,14 @@ def asset_save():
     as_list = []
     for key in request.form:
         as_list.append(request.form.get(key))
-    asset_save_value = idc_model.asset_save(tuple(as_list[1:]))
+    asset_save_value = model.asset_save(tuple(as_list[1:]))
     return json.dumps({"code" : 200})
 
 # 修改资产
 @app.route("/asset/view/")
 def asset_view():
     aid = request.args.get('id', 0)
-    view_asset_value = idc_model.get_asset_by_id(int(aid))
+    view_asset_value = model.get_asset_by_id(int(aid))
     return json.dumps(view_asset_value)
 
 # 保存修改后的资产信息
@@ -207,7 +207,7 @@ def asset_update():
     for key in request.form:
         au_list.append(request.form.get(key))
     au_list = au_list[1:] + [au_list[0]]
-    asset_update_value = idc_model.asset_update(tuple(au_list))
+    asset_update_value = model.asset_update(tuple(au_list))
     return json.dumps({"code" : 200})
 
 # 删除资产
@@ -215,7 +215,7 @@ def asset_update():
 def asset_delete():
     aid = request.form.get("id")
     if aid:
-        idc_model.asset_delete(int(aid))
+        model.asset_delete(int(aid))
         return json.dumps({"code" : 200})
 
 
@@ -223,7 +223,7 @@ def asset_delete():
 # 机房信息页面
 @app.route("/idc_list/")
 def idc_list():
-    engineroom_all = idc_model.engineroom_list()
+    engineroom_all = model.engineroom_list()
     return render_template('idc_list.html', engineroom_all=engineroom_all)
 
 # 返回机房添加页面
@@ -241,14 +241,14 @@ def idc_add_save():
     if idcname == '' or area == '' or ip_segment == '' or machine_number == '':
         return json.dumps({'code' : 400})
     else:
-        idc_model.idc_add_save(idcname, area, ip_segment, int(machine_number))
+        model.idc_add_save(idcname, area, ip_segment, int(machine_number))
         return json.dumps({'code':200})
 
 # 返回机房修改页面
 @app.route("/idc/view/")
 def idc_view():
     idcid = int(request.args.get('id'))
-    idc_tails = idc_model.idc_tails_get(idcid)
+    idc_tails = model.idc_tails_get(idcid)
     idcname = idc_tails.get("idcname")
     area = idc_tails.get("area")
     ip_segment = idc_tails.get("ip_segment")
@@ -263,7 +263,7 @@ def idc_view_save():
     area = request.args.get('area')
     ip_segment = request.args.get("ip_segment")
     machine_number = int(request.args.get('machine_number'))
-    idc_model.idc_view_save(idcid, idcname, area, ip_segment, machine_number)
+    model.idc_view_save(idcid, idcname, area, ip_segment, machine_number)
     return redirect("/idc_list/")
 
 #删除机房
@@ -271,7 +271,7 @@ def idc_view_save():
 def idc_delete():
     id = request.args.get('id', '0')
     if re.match(r'\d+', id):
-        idc_model.idcroom_delete(int(id))
+        model.idcroom_delete(int(id))
         return redirect('/idc_list/')
 
 ####################### agent http接口 ##########################
@@ -293,7 +293,7 @@ def monitor_host_create():
 @app.route('/monitor/host/list/')
 def monitor_host_list():
     id = request.args.get('id')
-    asset = idc_model.get_asset_by_id(id)
+    asset = model.get_asset_by_id(id)
     ip = asset.get('ip', '')
     result = model.monitor_host_list(ip)
     return json.dumps({'code':200, 'result':result})
@@ -315,9 +315,18 @@ def moitor_log_list():
 @app.route('/moitor/log/delete/', methods = ['POST'])
 def monitor_log_delete():
     id = request.form.get('id', '')
-    print(id)
     req = model.monitor_log_delete(id)
     return json.dumps(req)
+
+@app.route('/host/ssh/', methods=['POST'])
+def host_ssh():
+    host_id = int(request.form.get('id', ''))
+    system_user = request.form.get('system_user', '')
+    system_password = request.form.get('system_password', '')
+    ssh_command = request.form.get('ssh_command', '').split('\r\n')
+    return_value = model.host_ssh_command(host_id, system_user, system_password, ssh_command)
+    status_dict = {'status' : 200, 'return_value' : return_value}
+    return json.dumps(status_dict)
 
 # if __name__ == '__main__':
 #     app.run(host='0.0.0.0', port=10000, debug=True)

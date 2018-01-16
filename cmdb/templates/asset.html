@@ -143,7 +143,6 @@
                         </div>
                     </div>
                     <!-- 清空form表单 -->
-
                     <div class="form-group">
                         <input type="reset" name="reset" style="display: none;" />
                     </div>
@@ -294,6 +293,56 @@
         </div>
     </div>
 
+    <!--远程执行命令  dialog -->
+    <div class="modal fade" id="ssh-dailog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">远程执行命令</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal form-ssh">
+                    <input type="hidden" name="id" value="" />
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">服务器用户名</label>
+                        <div class="col-sm-10">
+                            <input type="test" class="form-control" name="system_user" value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">服务器密码</label>
+                        <div class="col-sm-10">
+                            <input type="password" class="form-control" name="system_password" value="" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                            <label class="col-sm-2 control-label">确认密码</label>
+                            <div class="col-sm-10">
+                                <input type="password" class="form-control" name="system_password2" value="" />
+                            </div>
+                        </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">执行命令:</label>
+                        <textarea class="form-control" rows="3" name="ssh_command" value=""></textarea>
+                    </div>
+                    <div class="form-group">
+                            <label class="col-sm-2 control-label">命令返回:</label>
+                            <textarea class="form-control" rows="3" name="ssh_return" value=""></textarea>
+                        </div>
+                    <div class="form-group">
+                        <input type="reset" name="reset" style="display: none;" />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary btn-ssh-save">执行</button>
+            </div>
+        </div>
+        </div>
+    </div>
+
     <table class="asset table table-bordered table-condensed  table-striped">
         <thead>
         <tr>
@@ -403,6 +452,8 @@ jQuery(document).ready(function(){
                         elements.push("<a href='javascript:void(0)'><i class='fa fa-edit btn-edit'" 
                             + "data-id=" + row['id'] + "></i></a>");
                         elements.push("<a href='javascript:void(0)'><i class='fa fa-trash btn-delete'" 
+                            + "data-id=" + row['id'] + "></i></a>");
+                        elements.push("<a href='javascript:void(0)'><i class='fa fa-file-code-o btn-ssh'" 
                             + "data-id=" + row['id'] + "></i></a>");
                         return elements.join(" ");
                     }}
@@ -594,5 +645,34 @@ jQuery(document).ready(function(){
         calendarWeeks: true,
         autoclose: true
     });
+
+    //资产添加
+    jQuery('.asset').on('click', '.btn-ssh', function() {
+        var host_id = jQuery(this).data('id');
+        jQuery("[name=id]").val(host_id);
+        jQuery("#ssh-dailog").modal("show")
+    });
+
+    jQuery('.btn-ssh-save').on('click', function () {
+        var params = jQuery(".form-ssh").serializeArray();
+        jQuery.post('/host/ssh/', params, function(response) { 
+            if(response['status'] === 200){
+                //jQuery("#ssh-dailog").modal("hide");
+                //swal("执行成功！",'',"success");
+                //jQuery("input[type=reset]").trigger("click");
+                jQuery("[name=ssh_command]").val('');
+                jQuery("[name=ssh_return]").val(response['return_value']);
+            }
+            else if(response['status'] === 400){
+                alert('error');
+            }
+        },
+        'json')
+    });
+
+    jQuery("#ssh-dailog").on("hidden.bs.modal", function() {
+        jQuery("input[type=reset]").trigger("click");
+    });
+
 });
 {% endblock %}

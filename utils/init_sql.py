@@ -5,6 +5,8 @@ from cmdb import config
 #创建需要的数据库,添加测试数据
 SQL_DROP_CMDB = '''DROP DATABASE cmdb'''
 SQL_CREATE_CMDB = '''CREATE DATABASE cmdb'''
+
+# 用户信息
 SQL_CREATE_USER = '''create table cmdb.user(
     id int primary key auto_increment,
     name varchar(30),
@@ -13,6 +15,7 @@ SQL_CREATE_USER = '''create table cmdb.user(
     age int
 )'''
 
+# 机房
 SQL_CREATE_IDC_DETAILED = '''create table cmdb.idc_detailed(
     id int primary key auto_increment,
     idcname varchar(40),
@@ -21,6 +24,7 @@ SQL_CREATE_IDC_DETAILED = '''create table cmdb.idc_detailed(
     machine_number int
 )'''
 
+# 资产
 SQL_CREATE_ASSET='''create table cmdb.asset (
     id int primary key auto_increment,
     sn varchar(125) not null unique key comment '资产编号',
@@ -40,6 +44,7 @@ SQL_CREATE_ASSET='''create table cmdb.asset (
     status int comment '0 正在使用,1 维护,2 删除'
 )'''
 
+# agent信息存储
 SQL_CREATE_MONITOR_HOST = '''create table cmdb.monitor_host(
     id int primary key auto_increment,
     ip varchar(128) comment '客户端IP',
@@ -50,6 +55,7 @@ SQL_CREATE_MONITOR_HOST = '''create table cmdb.monitor_host(
     r_time datetime comment '服务器写入数据库时间'
 )engine=innodb default charset=utf8;'''
 
+# 告警信息存储
 SQL_ALERT_CREATE = '''create table alert(
     id int primary key auto_increment,
     ip varchar(128) comment '告警客户端IP',
@@ -59,6 +65,15 @@ SQL_ALERT_CREATE = '''create table alert(
     type int comment '类型，1表示显示，2表示逻辑删除',
     c_time datetime comment '告警时间',
     d_time datetime comment '逻辑删除时间'
+)engine=innodb default charset=utf8;'''
+
+# 日志分析存储
+SQL_LOG_ANALYSIS = '''create table log_analysis(
+    id int primary key auto_increment,
+    ip varchar(128) comment '来访者IP',
+    url varchar(2083) comment '被访问URL',
+    code varchar(64) comment '访问状态码',
+    count int comment '总次数'
 )engine=innodb default charset=utf8;'''
 
 db = pymysql.connect(**config.config)
