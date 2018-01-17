@@ -369,5 +369,5 @@ def host_ssh_command(host_id, system_user, system_password, ssh_command):
     asset = get_asset_by_id(host_id)
     host_ip = asset.get('ip')
     port = 22
-    return_value = ssh.exec_cmds(host_ip, port, system_user, system_password, ssh_command)
+    return_value = ssh_remotely.exec_cmds(host_ip, port, system_user, system_password, ssh_command)
     return return_value

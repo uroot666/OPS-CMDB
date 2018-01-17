@@ -5,7 +5,7 @@
 import time
 import datetime
 from utils import dbutils
-from cmdb import idc_model
+from cmdb import model
 
 from utils import mail
 
@@ -43,7 +43,7 @@ def monitor_alert():
                 if rt_dict[key][resource] > policies[resource]['count']:
                     messages.append('%s超过%s分钟内%s次超过阀值%s%%' % (resource, INTERVAL, policies[resource]['count'], policies[resource]['ceil']))
             if messages:
-                asset = idc_model.get_asset_by_ip(key)
+                asset = model.get_asset_by_ip(key)
                 admin = asset.get('admin', DEFAULT_ADMIN)
                 # if admin != DEFAULT_ADMIN:
                 #     admin = [admin, DEFAULT_ADMIN]

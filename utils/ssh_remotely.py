@@ -53,7 +53,7 @@ def upload_files(host, port, username, password, files=[]):
     return rt_list
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
     # files = [(r'''C:\Users\Administrator\Documents\GitHub\cmdb\agent\cmdb_agent.py''', '/tmp/cmdb_agent.py')]
     # print(upload_files("192.168.174.131", 22, "root", "liangbiao-1", files))
 
