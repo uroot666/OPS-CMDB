@@ -42,6 +42,11 @@
                 <span class="nav-label">监控</span> 
                 <span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level collapse">
+                    <li {% block nav_dashboard %}{% endblock %}>
+                        <a href="/dashboard/">数据总览</a>
+                    </li>
+                </ul>
+                <ul class="nav nav-second-level collapse">
                     <li {% block nav_mitor_log %}{% endblock %}>
                         <a href="/moitor/log/">报警日志</a>
                     </li>

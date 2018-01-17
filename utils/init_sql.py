@@ -1,9 +1,8 @@
 #encoding=utf-8
 import pymysql
-from cmdb import config
+from config import config
 
-#创建需要的数据库,添加测试数据
-SQL_DROP_CMDB = '''DROP DATABASE cmdb'''
+# 创建数据库
 SQL_CREATE_CMDB = '''CREATE DATABASE cmdb'''
 
 # 用户信息
@@ -76,12 +75,20 @@ SQL_LOG_ANALYSIS = '''create table log_analysis(
     count int comment '总次数'
 )engine=innodb default charset=utf8;'''
 
-db = pymysql.connect(**config.config)
-cursor = db.cursor()
-cursor.execute(SQL_CREATE_USER)
-cursor.execute(SQL_CREATE_IDC_DETAILED)
-cursor.execute(SQL_CREATE_ASSET)
-cursor.execute(SQL_CREATE_MONITOR_HOST)
-db.commit()
-cursor.close()
-db.close()
+# 
+SQL_LOG = '''create table log(
+    id int primary key auto_increment,
+    a_time datetime comment '访问时间',
+    ip varchar(128) comment '来访者IP',
+    url varchar(2083) comment '被访问URL',
+    code int comment '访问状态码',
+    city_name varchar(64) comment '城市名字'
+)engine=innodb default charset=utf8;'''
+
+#
+SQL_geoip = '''create table geoip(
+    id int primary key auto_increment,
+    city_name varchar(64) comment '城市名字',
+    city_lat float comment '城市纬度',
+    city_lgt float comment '城市经度'
+)engine=innodb default charset=utf8;'''

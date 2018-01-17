@@ -132,7 +132,6 @@ def upload():
     file = request.files['upload']  # 上传文件数据
     if file:
         result = model.upload(file, ALLOWED, upload_dir)
-        print(result)
     return redirect('/log/')
 
 #查询分析日志的结果表单页面
@@ -327,6 +326,19 @@ def host_ssh():
     return_value = model.host_ssh_command(host_id, system_user, system_password, ssh_command)
     status_dict = {'status' : 200, 'return_value' : return_value}
     return json.dumps(status_dict)
+
+@app.route('/dashboard/')
+def overview():
+    if session.get('user') is None: return redirect('/')
+    return render_template('/dashboard.html')
+
+@app.route('/dashboard/data/')
+def dashboard():
+    if session.get('user') is None: return json.dumps({'code' : 401, 'data' : []})
+    return json.dumps({'code' : 200, 
+                        'data' : {'log_code_dist_legend': ['404','200','500'],
+                        'log_code_dist_data':[{'value':335, 'name':'404'},{'value':310, 'name':'200'},{'value':234, 'name':'500'}]
+                    }})
 
 # if __name__ == '__main__':
 #     app.run(host='0.0.0.0', port=10000, debug=True)

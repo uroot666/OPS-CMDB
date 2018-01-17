@@ -1,13 +1,16 @@
-#encoding=UTF-8
+#encoding=utf-8
 import json
 import pymysql
 import datetime
 import os
 import time
+import geoip2.database
+
+from cmdb import app
 
 from utils import dbutils
 from utils import encryption
-from utils import ssh
+from utils import ssh_remotely
 
 SQL_ENGINEROOM_LIST = "select id,idcname,area,ip_segment,machine_number from idc_detailed"
 SQL_ENGINEROOM_LIST_COLUMS = ('id', 'idcname', 'area','ip_segment', 'engineroom_number')
@@ -32,7 +35,8 @@ SQL_MONITOR_HOST_LIST = 'select ip, cpu, mem, disk, m_time from monitor_host whe
 SQL_GET_MOITOR_LOG = "select id,ip,message,admin,status,type,c_time from alert where type=1"
 SQL_GET_MOITOR_LOG_COLUMS = ('id', 'ip', 'message', 'admin', 'status', 'type', 'c_time')
 
-SQL_GET_LOG_ANALYSIS = 'select ip, url, code, count from log_analysis order by count desc limit %s'
+# SQL_GET_LOG_ANALYSIS = 'select ip, url, code, count from log_analysis order by count desc limit %s'
+SQL_GET_LOG_ANALYSIS = 'select ip, url, code, count(*) as cnt from log group by ip, url, code order by cnt desc limit %s'
 SQL_GET_LOG_ANALYSIS_COLUMS = ('ip', 'url', 'code', 'count')
 SQL_INSET_LOG_ANALYSIS = 'insert into log_analysis(ip, url, code, count) values(%s, %s, %s, %s)'
 
@@ -200,7 +204,7 @@ def upload(file, ALLOWED, save_path): #file文件数据流，ALLOWED允许后缀
         file_name = datetime.datetime.now().strftime("%Y%m%d%H%M%S") + '.' + filename.rsplit('.', 1)[1] #文件新名字
         result_file = os.path.join(save_path, file_name)
         file.save(result_file)
-        status = inset_log_analysis(result_file)
+        status = log_import(result_file)
     return (result_file, status)
 
 # #分析log文件并返回倒数topn行
@@ -225,26 +229,69 @@ def upload(file, ALLOWED, save_path): #file文件数据流，ALLOWED允许后缀
 #     return req
 
 # 写入日志分析结果
-def inset_log_analysis(filname):
-    try:
-        stat_dict = {}
-        fhandler = open(filname, "r")
-        for line in fhandler:
-            line_list = line.split()
-            key = (line_list[0], line_list[6], line_list[8])
-            stat_dict[key] = stat_dict.setdefault(key, 0) + 1
-        fhandler.close()
+# def inset_log_analysis(filname):
+#     try:
+#         stat_dict = {}
+#         fhandler = open(filname, "r")
+#         for line in fhandler:
+#             line_list = line.split()
+#             key = (line_list[0], line_list[6], line_list[8])
+#             stat_dict[key] = stat_dict.setdefault(key, 0) + 1
+#         fhandler.close()
 
-        results = stat_dict.items()
-        result_list = []
-        for result in results:
-            if result:
-                result = (result[0][0], result[0][1], result[0][2], result[1])
-                result_list.append(result)
-        dbutils.list_db_insert(SQL_INSET_LOG_ANALYSIS , False, result_list)
+#         results = stat_dict.items()
+#         result_list = []
+#         for result in results:
+#             if result:
+#                 result = (result[0][0], result[0][1], result[0][2], result[1])
+#                 result_list.append(result)
+#         dbutils.list_db_insert(SQL_INSET_LOG_ANALYSIS , False, result_list)
+#         return {'status' : 'ok'}
+#     except BaseException as e:
+#         return {'status' : 'error'}
+
+# 提取log信息写入数据库
+def log_import(filname):
+    SQL_LOG_SAVE = 'insert into log(a_time, ip, url, code, city_name) values(%s, %s, %s, %s, %s)'
+    SQL_GEOIP_SAVE = 'insert into geoip(city_name, city_lat, city_lgt) values(%s, %s, %s)'
+    log_list = []
+    geoip_list = []
+    if os.path.exists(filname):
+        fhandler = None
+        geo_reader = None
+        try:
+            fhandler = open(filname, "r")
+            geo_reader = geoip2.database.Reader(app.config['GeoIP'])
+            for line in fhandler:
+                try:
+                    elements = line.split()
+                    a_time = time.strftime('%Y-%m-%d %H:%M:%S', time.strptime(elements[3], '[%d/%b/%Y:%H:%M:%S'))
+                    ip = elements[0]
+                    url = elements[6]
+                    code = elements[8]
+                    response = geo_reader.city(ip)
+                    if response.country.names.get('en', '').lower() == 'china':
+                        city_name = response.city.names.get('zh-CN', '')
+                        if city_name:
+                            city_lat = response.location.latitude
+                            city_lgt = response.location.longitude
+                            log_list.append((a_time, ip, url, code, city_name))
+                            geoip_list.append((city_name, city_lat, city_lgt))
+                except BaseException as e:
+                    print(e)
+            geoip_list = list(set(geoip_list))
+            dbutils.list_db_insert(SQL_LOG_SAVE, False, log_list)
+            dbutils.list_db_insert(SQL_GEOIP_SAVE, False, geoip_list)
+        except BaseException as e:
+            print(e)
+            return {'status' : 'error'}
+        finally:
+            if geo_reader:
+                geo_reader.close()
+            if fhandler:
+                fhandler.close()
+                os.remove(filname)
         return {'status' : 'ok'}
-    except BaseException as e:
-        return {'status' : 'error'}
 
 def idc_tails_get(id):
     idc_tails = dbutils.idc_db_operating(SQL_IDC_TAILS_GET, True, (id,))
@@ -307,7 +354,7 @@ def asset_update(update_args):
     return 200
 
 
-# 查询日志分析的前topn行
+# 查询访问次数的前topn的信息（log日志）
 def get_log_analysis(topn):
     _, res_list = dbutils.db_operating(SQL_GET_LOG_ANALYSIS, True, (topn,))
     req = []

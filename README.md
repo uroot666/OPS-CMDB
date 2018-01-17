@@ -5,6 +5,7 @@
 1. web框架使用flask
 2. 数据库使用mysql,使用pymysql库连接
 4. paramiko 远程执行命令,上传文件(用来发布agent)
+5. geoip 定位IP地理位置
 
 ## 前端使用
 1. 前端框架使用 bootstrap
@@ -13,6 +14,7 @@
 4. 提示弹窗 sweetalert
 5. 图表展示 Highcharts 
 6. 时间 datepicker
+7. 数据总览画图 echarts
 
 ## cmdb agent
 1. 使用了psutil, requests模块
