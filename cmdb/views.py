@@ -335,9 +335,19 @@ def overview():
 @app.route('/dashboard/data/')
 def dashboard():
     if session.get('user') is None: return json.dumps({'code' : 401, 'data' : []})
+    log_code_dist_data, log_code_dist_legend = model.log_code_dist()
+    log_code_column_legend,log_code_column_xAxis,log_code_column_series = model.log_code_time_dist()
+    log_ip_distributed_geoCoord, log_ip_distributed_markLine, log_ip_distributed_markPoint = model.log_ip_distributed()
     return json.dumps({'code' : 200, 
-                        'data' : {'log_code_dist_legend': ['404','200','500'],
-                        'log_code_dist_data':[{'value':335, 'name':'404'},{'value':310, 'name':'200'},{'value':234, 'name':'500'}]
+                        'data' : {
+                        'log_code_dist_legend' : log_code_dist_legend,
+                        'log_code_dist_data' : log_code_dist_data,
+                        'log_code_column_legend' : log_code_column_legend,
+                        'log_code_column_xAxis': log_code_column_xAxis,
+                        'log_code_column_series': log_code_column_series,
+                        'log_ip_distributed_geoCoord' : log_ip_distributed_geoCoord,
+                        'log_ip_distributed_markLine' : log_ip_distributed_markLine,
+                        'log_ip_distributed_markPoint' : log_ip_distributed_markPoint
                     }})
 
 # if __name__ == '__main__':

@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 
-{% block title %}CMDB | 信息板{% endblock %}
+{% block title %}CMDB | 数据总览{% endblock %}
 
 {% block nav_moitor %}class="active"{% endblock %}
 
@@ -23,7 +23,9 @@
 
 
 {% block connect %}
+<div id="log-ip-distributed" style="height:400px"></div>
 <div id="log-code-dist" style="height:400px"></div>
+<div id="log-code-column" style="height:400px"></div>
 {% endblock %}
 
 
@@ -36,17 +38,15 @@
 jQuery(document).ready(function(){
     jQuery.get('/dashboard/data/', {}, function(response) {
         if (response['code'] != 200) {return;}
-
+        //code饼图
         // 基于准备好的dom，初始化echarts图表
         var log_code_dist = echarts.init(document.getElementById('log-code-dist')); 
-        
         var log_code_dist_legend = response['data']['log_code_dist_legend']
         var log_code_dist_data = response['data']['log_code_dist_data']
-
         var log_code_dist_option = {
             title : {
-                text: '最近一小时日志访问状态码分布图',
-                subtext: '纯属虚构',
+                text: '日志状态码详细',
+                subtext: '',
                 x:'center'
             },
             tooltip : {
@@ -90,9 +90,187 @@ jQuery(document).ready(function(){
                 }
             ]
         };
-
         // 为echarts对象加载数据 
         log_code_dist.setOption(log_code_dist_option); 
+
+        // 柱状图
+        var log_code_column = echarts.init(document.getElementById('log-code-column'));
+        var log_code_column_legend = response['data']['log_code_column_legend']
+        var log_code_column_xAxis = response['data']['log_code_column_xAxis']
+        var log_code_column_series = response['data']['log_code_column_series']
+
+        var log_code_column_option = {
+            title : {
+                text: '',
+                subtext: '',
+                x:'center'
+            },
+            tooltip : {
+                trigger: 'axis',
+                axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                    type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                }
+            },
+            legend: {
+                x : 'left',
+                data:log_code_column_legend
+                
+            },
+            toolbox: {
+                show : true,
+                orient: 'vertical',
+                x: 'right',
+                y: 'center',
+                feature : {
+                    mark : {show: true},
+                    dataView : {show: true, readOnly: false},
+                    magicType : {show: true, type: ['line', 'bar', 'stack', 'tiled']},
+                    restore : {show: true},
+                    saveAsImage : {show: true}
+                }
+            },
+            calculable : true,
+            xAxis : [
+                {
+                    type : 'category',
+                    data : log_code_column_xAxis
+                }
+            ],
+            yAxis : [
+                {
+                    type : 'value'
+                }
+            ],
+            series : log_code_column_series
+        };
+        log_code_column.setOption(log_code_column_option); 
+
+        //IP地址分布图
+        var log_ip_distributed = echarts.init(document.getElementById('log-ip-distributed'));
+        var log_ip_distributed_geoCoord = response['data']['log_ip_distributed_geoCoord']
+        var log_ip_distributed_markLine = response['data']['log_ip_distributed_markLine']
+        var log_ip_distributed_markPoint = response['data']['log_ip_distributed_markPoint']
+
+        var log_ip_distributed_option = {
+                backgroundColor: '#1b1b1b',
+                color: ['gold','aqua','lime'],
+                title : {
+                    text: 'IP分布',
+                    subtext:'',
+                    x:'center',
+                    textStyle : {
+                        color: '#fff'
+                    }
+                },
+                tooltip : {
+                    trigger: 'item',
+                    formatter: '{b}'
+                },
+                legend: {
+                    orient: 'vertical',
+                    x:'left',
+                    data:['机房1'],
+                    selectedMode: 'single',
+                    selected:{
+                        '机房1' : true,
+                    },
+                    textStyle : {
+                        color: '#fff'
+                    }
+                },
+                toolbox: {
+                    show : true,
+                    orient : 'vertical',
+                    x: 'right',
+                    y: 'center',
+                    feature : {
+                        mark : {show: true},
+                        dataView : {show: true, readOnly: false},
+                        restore : {show: true},
+                        saveAsImage : {show: true}
+                    }
+                },
+                dataRange: {
+                    min : 0,
+                    max : 30000,
+                    calculable : true,
+                    color: ['#ff3333', 'orange', 'yellow','lime','aqua'],
+                    textStyle:{
+                        color:'#fff'
+                    }
+                },
+                series : [
+                    {
+                        name: '全国',
+                        type: 'map',
+                        roam: true,
+                        hoverable: false,
+                        mapType: 'china',
+                        itemStyle:{
+                            normal:{
+                                borderColor:'rgba(100,149,237,1)',
+                                borderWidth:0.5,
+                                areaStyle:{
+                                    color: '#1b1b1b'
+                                }
+                            }
+                        },
+                        data:[],
+                        geoCoord: log_ip_distributed_geoCoord
+                    },
+                    {
+                        name: '机房1',
+                        type: 'map',
+                        mapType: 'china',
+                        data:[],
+                        markLine : {
+                            smooth:true,
+                            effect : {
+                                show: true,
+                                scaleSize: 1,
+                                period: 30,
+                                color: '#fff',
+                                shadowBlur: 10
+                            },
+                            itemStyle : {
+                                normal: {
+                                    borderWidth:1,
+                                    lineStyle: {
+                                        type: 'solid',
+                                        shadowBlur: 10
+                                    }
+                                }
+                            },
+                            data :log_ip_distributed_markLine
+                        },
+                        markPoint : {
+                            symbol:'emptyCircle',
+                            symbolSize : function (v){
+                                return 10 + v/1000
+                            },
+                            effect : {
+                                show: true,
+                                shadowBlur : 0
+                            },
+                            itemStyle:{
+                                normal:{
+                                    label:{show:false}
+                                },
+                                emphasis: {
+                                    label:{position:'top'}
+                                }
+                            },
+                            data :log_ip_distributed_markPoint
+                        }
+                    },
+             
+                    
+                ]
+            };                
+
+        log_ip_distributed.setOption(log_ip_distributed_option); 
+
     }, 'json');
+
 });
 {% endblock %}

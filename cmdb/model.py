@@ -40,6 +40,12 @@ SQL_GET_LOG_ANALYSIS = 'select ip, url, code, count(*) as cnt from log group by 
 SQL_GET_LOG_ANALYSIS_COLUMS = ('ip', 'url', 'code', 'count')
 SQL_INSET_LOG_ANALYSIS = 'insert into log_analysis(ip, url, code, count) values(%s, %s, %s, %s)'
 
+SQL_GET_CODE_COUNT = 'select count(*) as count, code from log group by code;'
+SQL_GET_CODE_COUNT_COLUMS = ('value', 'name')
+
+SQL_log_ip_distributed1 = 'select city_name,city_lgt,city_lat from geoip;'
+SQL_log_ip_distributed2 = 'select city_name, count(*) as count from log group by city_name;'
+
 class User(object):
     KEY = 'id'
     SQL_VALIDATE_LOGIN = 'select id,name from user where name = %s and password = %s'
@@ -371,3 +377,64 @@ def host_ssh_command(host_id, system_user, system_password, ssh_command):
     port = 22
     return_value = ssh_remotely.exec_cmds(host_ip, port, system_user, system_password, ssh_command)
     return return_value
+
+# 查询日志里面所有状态码及数量
+def log_code_dist():
+    log_code_dist_data_list = []
+    log_code_dist_legend_list = []
+    _, data = dbutils.db_operating(SQL_GET_CODE_COUNT, True)
+    for line in data:
+        log_code_dist_legend_list.append(line[1])
+        line = dict(zip(SQL_GET_CODE_COUNT_COLUMS, line))
+        log_code_dist_data_list.append(line)
+    return log_code_dist_data_list,log_code_dist_legend_list
+
+# 查询单位小时内各个状态码的数量，目前是假数据，因为不合逻辑，数据只是用来测试展示效果
+def log_code_time_dist():
+    sql2 = "select date_format(a_time, '%%Y-%%m-%%d %%H:00:00') as time, code, count(*) from log group by time, code limit 10;"
+    _, rt_list = dbutils.db_operating(sql2, True)
+    legend = []
+    xAxis = []
+    series = []
+    temp_data = {}
+    for line in rt_list:
+        if line[0] not in legend:
+            legend.append(line[0])
+        if line[2] not in xAxis:
+            xAxis.append(line[2])
+        temp_data.setdefault(line[0], {})
+        temp_data[line[0]][line[2]] = line[1]
+    xAxis.sort()
+    for code in legend:
+        code_time_date = []
+        for time in xAxis:
+            code_time_date.append(temp_data[code].get(time, 0))
+        series.append({'name':code, 'type':'bar', 'stack':'code', 'data':code_time_date})
+    return legend,xAxis,series
+
+# 查询log里面IP的经纬度，返回给IP分布图使用
+def log_ip_distributed():
+    server_ip = '14.17.88.1'
+    log_ip_distributed_geoCoord = {}
+    log_ip_distributed_markLine = []
+    log_ip_distributed_markPoint = []
+    try:
+        geo_reader = geoip2.database.Reader(app.config['GeoIP'])
+        response = geo_reader.city(server_ip)
+        server_name = response.city.names.get('zh-CN', '')
+        server_lgt = response.location.longitude
+        server_lat = response.location.latitude
+    finally:
+        geo_reader.close()
+        log_ip_distributed_geoCoord[server_name] = [server_lgt, server_lat]
+
+    _, rt_list = dbutils.db_operating(SQL_log_ip_distributed1, True)
+    for line in rt_list:
+        log_ip_distributed_geoCoord[line[0]] = [line[1], line[2]]
+    
+    _, rt_list = dbutils.db_operating(SQL_log_ip_distributed2, True)
+    for line in rt_list:
+        log_ip_distributed_markLine.append([{'name':line[0]}, {'name':server_name, 'value':line[1]}])
+        log_ip_distributed_markPoint.append({'name':line[0], 'value':line[1]})
+
+    return log_ip_distributed_geoCoord, log_ip_distributed_markLine, log_ip_distributed_markPoint
