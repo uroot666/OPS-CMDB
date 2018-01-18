@@ -13,7 +13,7 @@ import re
 from . import model
 
 from cmdb import app
-
+from utils import decorator
 # app = Flask(__name__)
 # app.secret_key = "\xc5T|\xc9\x1b6\x8c\xef(\xc6\xfd\x86S\x82b\x19)\xcdg\x1c3Mf\x93z|Bk"
 #首页
@@ -39,6 +39,7 @@ def login():
 
 # 显示所有用户信息
 @app.route('/users/')
+@decorator.login_required
 def users():
     if session.get('user') is None:
         return redirect('/')
@@ -47,16 +48,14 @@ def users():
 
 # 添加用户界面
 @app.route('/user/add/')
+@decorator.login_required
 def user_add():
-    if session.get('user') is None:
-        return redirect('/')
     return render_template('user_create.html')
 
 # 保存添加用户
 @app.route('/user/create/', methods=["POST"])
+@decorator.login_required
 def user_create():
-    if session.get('user') is None:
-        return redirect('/')
     username = request.form.get('username', '')
     password = request.form.get('password', '')
     email = request.form.get('email', '')
@@ -72,9 +71,8 @@ def user_create():
 
 # 删除用户
 @app.route('/user/delete/')
+@decorator.login_required
 def userdel():
-    if session.get('user') is None:
-        return redirect('/')
     id = int(request.args.get('id', ''))
     jud = model.User.delete_by_key(id, 'id')
     user_all = model.User.get_list()
@@ -85,17 +83,15 @@ def userdel():
 
 # 修改用户
 @app.route('/user/view/')
+@decorator.login_required
 def user_view():
-    if session.get('user') is None:
-        return redirect('/')
     user = model.User.get_user_by_id(request.args.get('id', 0))
     return render_template('user_view.html', uid=user.get("uid"), username=user.get("username"), age=user.get("age"), email=user.get("email"))
 
 # 保存修改的用户信息
 @app.route('/user/view_save/', methods=["POST"])
+@decorator.login_required
 def user_view_save():
-    if session.get('user') is None:
-        return redirect('/')
     uid = int(request.form.get('uid'))
     username = request.form.get('username')
     age = request.form.get('age')
@@ -110,9 +106,8 @@ def user_view_save():
 
 # 修改用户密码
 @app.route('/user/set/password/', methods=['POST'])
+@decorator.login_required
 def user_set_password_view():
-    if session.get('user') is None:
-        return redirect('/')
     uid = request.form.get('uid')
     old_password = request.form.get('old_password')
     new_password = request.form.get('new_password')
@@ -126,6 +121,7 @@ def user_set_password_view():
 
 # 上传文件处理
 @app.route('/upload/', methods=['POST'])
+@decorator.login_required
 def upload():
     ALLOWED = set(['log', 'py']) # 允许后缀
     upload_dir = os.path.join(app.config['basedir'], 'temp')  #存储路径
@@ -136,18 +132,16 @@ def upload():
 
 #查询分析日志的结果表单页面
 @app.route('/log/')
+@decorator.login_required
 def log_index():
-    if session.get('user') is None:
-        return redirect('/')
     # top = request.form
     topn = request.args.get('topn', '')
     return render_template('log.html', topn = topn)
 
 # 返回分析日志的信息给页面
 @app.route('/log/list/')
+@decorator.login_required
 def log():
-    if session.get('user') is None:
-        return redirect('/')
     topn = request.args.get('topn', 10)
     topn = int(topn) if str(topn).isdigit() else 10
     result = model.get_log_analysis(topn)
@@ -170,21 +164,22 @@ def test():
 
 # 返回资产管理页面
 @app.route("/asset/")
+@decorator.login_required
 def asset_index():
-    if session.get('user') is None:
-        return redirect('/')
     # 查询出所有机房的列表，返回到资产管理页面
     engineroom_all = model.engineroom_list()
     return render_template('asset.html', engineroom_all=engineroom_all)
 
 # 返回资产信息
 @app.route("/asset/list/")
+@decorator.login_required
 def asset_list():
     assets = model.get_asset()
     return json.dumps({"data": assets})
 
 # 保存添加资产信息
 @app.route("/asset/save/", methods=["POST"])
+@decorator.login_required
 def asset_save():
     as_list = []
     for key in request.form:
@@ -194,6 +189,7 @@ def asset_save():
 
 # 修改资产
 @app.route("/asset/view/")
+@decorator.login_required
 def asset_view():
     aid = request.args.get('id', 0)
     view_asset_value = model.get_asset_by_id(int(aid))
@@ -201,6 +197,7 @@ def asset_view():
 
 # 保存修改后的资产信息
 @app.route("/asset/update/", methods=["POST"])
+@decorator.login_required
 def asset_update():
     au_list = []
     for key in request.form:
@@ -211,6 +208,7 @@ def asset_update():
 
 # 删除资产
 @app.route("/asset/delete/", methods=["POST"])
+@decorator.login_required
 def asset_delete():
     aid = request.form.get("id")
     if aid:
@@ -221,17 +219,20 @@ def asset_delete():
 ####################### 机房信息管理 #########################
 # 机房信息页面
 @app.route("/idc_list/")
+@decorator.login_required
 def idc_list():
     engineroom_all = model.engineroom_list()
     return render_template('idc_list.html', engineroom_all=engineroom_all)
 
 # 返回机房添加页面
 @app.route("/idc/add/")
+@decorator.login_required
 def idc_add():
     return render_template('idc_create.html')
 
 # 保存添加的机房
 @app.route("/idc/add_save/", methods=["POST"])
+@decorator.login_required
 def idc_add_save():
     idcname = request.form.get('idcname', '')
     area = request.form.get('area', '')
@@ -245,6 +246,7 @@ def idc_add_save():
 
 # 返回机房修改页面
 @app.route("/idc/view/")
+@decorator.login_required
 def idc_view():
     idcid = int(request.args.get('id'))
     idc_tails = model.idc_tails_get(idcid)
@@ -256,6 +258,7 @@ def idc_view():
 
 # 将机房修改信息保存到数据库
 @app.route("/idc/view_save/")
+@decorator.login_required
 def idc_view_save():
     idcid = int(request.args.get('idcid'))
     idcname = request.args.get('idcname')
@@ -267,6 +270,7 @@ def idc_view_save():
 
 #删除机房
 @app.route("/idc/delete/")
+@decorator.login_required
 def idc_delete():
     id = request.args.get('id', '0')
     if re.match(r'\d+', id):
@@ -276,6 +280,7 @@ def idc_delete():
 ####################### agent http接口 ##########################
 # 将agent发回的数据存储到数据库
 @app.route('/monitor/host/create/', methods=['POST'])
+@decorator.login_required
 def monitor_host_create():
     req = request.form
     # ip = request.form.get('ip', '')
@@ -290,6 +295,7 @@ def monitor_host_create():
 
 # 返回资源状态信息
 @app.route('/monitor/host/list/')
+@decorator.login_required
 def monitor_host_list():
     id = request.args.get('id')
     asset = model.get_asset_by_id(id)
@@ -299,6 +305,7 @@ def monitor_host_list():
 
 # 返回告警日志页面
 @app.route('/moitor/log/')
+@decorator.login_required
 def moitor_log_index():
     if session.get('user') is None:
         return redirect('/')
@@ -306,18 +313,21 @@ def moitor_log_index():
 
 # 查询出告警日志，然会给告警页面
 @app.route('/moitor/log/list/')
+@decorator.login_required
 def moitor_log_list():
     moitor_log = model.get_moitor_log()
     return json.dumps({"data" : moitor_log})
 
 # 删除告警日志
 @app.route('/moitor/log/delete/', methods = ['POST'])
+@decorator.login_required
 def monitor_log_delete():
     id = request.form.get('id', '')
     req = model.monitor_log_delete(id)
     return json.dumps(req)
 
 @app.route('/host/ssh/', methods=['POST'])
+@decorator.login_required
 def host_ssh():
     host_id = int(request.form.get('id', ''))
     system_user = request.form.get('system_user', '')
@@ -328,13 +338,13 @@ def host_ssh():
     return json.dumps(status_dict)
 
 @app.route('/dashboard/')
+@decorator.login_required
 def overview():
-    if session.get('user') is None: return redirect('/')
     return render_template('/dashboard.html')
 
 @app.route('/dashboard/data/')
+@decorator.login_required
 def dashboard():
-    if session.get('user') is None: return json.dumps({'code' : 401, 'data' : []})
     log_code_dist_data, log_code_dist_legend = model.log_code_dist()
     log_code_column_legend,log_code_column_xAxis,log_code_column_series = model.log_code_time_dist()
     log_ip_distributed_geoCoord, log_ip_distributed_markLine, log_ip_distributed_markPoint = model.log_ip_distributed()
