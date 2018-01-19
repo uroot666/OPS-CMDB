@@ -5,14 +5,18 @@ from flask import render_template
 from flask import request
 from flask import redirect
 from flask import session
+
+from io import StringIO
+import csv
+
 import datetime
 import os
 import json
 import re
 
-from . import model
-
 from cmdb import app
+from cmdb import model
+
 from utils import decorator
 # app = Flask(__name__)
 # app.secret_key = "\xc5T|\xc9\x1b6\x8c\xef(\xc6\xfd\x86S\x82b\x19)\xcdg\x1c3Mf\x93z|Bk"
@@ -147,6 +151,24 @@ def log():
     result = model.get_log_analysis(topn)
     # result = model.gethtml('access.log', topn)
     return json.dumps({"data" : result})
+
+# 下载日志topn，保存为csv文件
+@decorator.login_required
+@app.route('/download/')
+def download():
+    topn = request.args.get('topn', '')
+    topn = int(topn) if str(topn).isdigit() else 10
+    result = model.get_log_analysis(topn)
+    io = StringIO()
+    csv_writer = csv.writer(io)
+    csv_writer.writerow(['IP', 'URL', 'CODE', 'COUNT'])
+    for line in result:
+        line = [line.get('ip'), line.get('url'), line.get('code'), line.get('count')]
+        csv_writer.writerow(line)
+    text = io.getvalue()
+    io.close()
+    return text, 200, {'Content-Type':'text/csv; charset=utf-8', 'Content-disposition' : 'attachment; filename=TOP_%s_log.csv' % topn}
+
 
 # 退出登录
 @app.route('/logout/')

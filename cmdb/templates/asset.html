@@ -16,6 +16,7 @@
 <link href="/static/css/bootstrap-slider.css" rel="stylesheet">
 <link href="/static/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
 <link href="/static/bootstrap-datepicker/css/bootstrap-datepicker.css" rel="stylesheet">
+<link href="/static/bootstrapvalidator/dist/css/bootstrapValidator.min.css" rel="stylesheet">
 
 {% endblock %}
 
@@ -376,6 +377,7 @@
 <script src="/static/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
 <script src="/static/js/highcharts.js"></script>
 <script src="/static/bootstrap-datepicker/locales/bootstrap-datepicker.zh-CN.min.js"></script>
+<script src="/static/bootstrapvalidator/dist/js/bootstrapValidator.min.js"></script>
 {% endblock %}
 
 {% block js %}
@@ -462,6 +464,11 @@ jQuery(document).ready(function(){
 
     //资产添加
     jQuery('.btn-create-save').on('click', function() {
+        var bootstrapValidator = jQuery('.form-create').data('bootstrapValidator');
+        if (bootstrapValidator) {
+            bootstrapValidator.validate();
+            if (!bootstrapValidator.isValid()) {return;}
+        };
         jQuery.post('/asset/save/',
                     jQuery('.form-create').serializeArray(),
                     function(data){
@@ -478,6 +485,129 @@ jQuery(document).ready(function(){
                     jQuery("input[type=reset]").trigger("click");
                     swal("添加成功！", "创建了一条资产信息！","success")
             });
+    //资产添加，前端校验
+    jQuery('.form-create').bootstrapValidator({
+        message: '参数不正确',
+        feedbackIcons: {
+            valid: 'glyphicon glyphicon-ok',
+            invalid: 'glyphicon glyphicon-remove',
+            validating: 'glyphicon glyphicon-refresh'
+        },
+        fields: {
+            'create-sn': { // name属性值
+                message: 'SN不正确!',
+                validators: {
+                    notEmpty: { // 非空校验
+                        message: 'SN不能为空!'
+                    },
+                }
+            },
+            "create-os": { // name属性值
+                message: 'OS错误!',
+                validators: {
+                    notEmpty: { // 非空校验
+                        message: 'OS不能为空!'
+                    },
+                }
+            },
+            "create-vendor": { // name属性值
+                message: '生产厂商错误!',
+                validators: {
+                    notEmpty: { // 非空校验
+                        message: '生产厂商不能为空!'
+                    },
+                }
+            },
+            "create-ip": { // name属性值
+                message: 'IP错误!',
+                validators: {
+                    notEmpty: { // 非空校验
+                        message: 'IP不能为空!'
+                    },
+                }
+            },
+            "create-model": { // name属性值
+                message: '型号错误!',
+                validators: {
+                    notEmpty: { // 非空校验
+                        message: '型号不能为空!'
+                    },
+                }
+            },
+            "create-cpu": { // name属性值
+                message: 'CPU错误!',
+                validators: {
+                    notEmpty: { // 非空校验
+                        message: 'CPU不能为空!'
+                    },
+                }
+            },
+            "create-ram": { // name属性值
+                message: '内存错误!',
+                validators: {
+                    notEmpty: { // 非空校验
+                        message: '内存不能为空!'
+                    },
+                }
+            },
+            "create-disk" : { // name属性值
+                message: '磁盘错误!',
+                validators: {
+                    notEmpty: { // 非空校验
+                        message: '磁盘不能为空!'
+                    },
+                }
+            },
+            "create-admin": { // name属性值
+                message: '管理员错误!',
+                validators: {
+                    notEmpty: { // 非空校验
+                        message: '管理员不能为空!'
+                    },
+                }
+            },
+            "create-buiness": { // name属性值
+                message: '业务错误!',
+                validators: {
+                    notEmpty: { // 非空校验
+                        message: '业务不能为空!'
+                    },
+                }
+            },
+            "create-machine_room_id": { // name属性值
+                message: '机房错误!',
+                validators: {
+                    notEmpty: { // 非空校验
+                        message: '机房不能为空!'
+                    },
+                }
+            },
+            "create-time_on_shelves": { // name属性值
+                message: '上架时间错误!',
+                validators: {
+                    notEmpty: { // 非空校验
+                        message: '上架时间不能为空!'
+                    },
+                }
+            },
+            "create-over_guaranteed_date": { // name属性值
+                message: '过保时间错误!',
+                validators: {
+                    notEmpty: { // 非空校验
+                        message: '过保时间不能为空!'
+                    },
+                }
+            },
+            "create-status": { // name属性值
+                message: '状态不正确!',
+                validators: {
+                    notEmpty: { // 非空校验
+                        message: '状态不能为空!'
+                    },
+                }
+            },
+        }
+    });
     
     //资产删除
     jQuery('.asset').on('click', '.btn-delete', function() {

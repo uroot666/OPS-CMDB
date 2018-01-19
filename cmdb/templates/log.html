@@ -45,6 +45,13 @@
         {% endif %}
         role="button">TOP {{select_topn}}</a>
     {% endfor %}
+
+    {% for select_topn in ['10', '20', '30', '40'] %}
+        <a href="/download/?topn={{select_topn}}"
+        class="btn btn-white"
+        role="button">TOP {{select_topn}} 下载</a>
+    {% endfor %}
+    
     </form>
     <table class="moitor-log table table-bordered table-condensed  table-striped">
         <thead>

@@ -6,11 +6,11 @@ import os
 import time
 import geoip2.database
 
-from cmdb import app
-
 from utils import dbutils
 from utils import encryption
 from utils import ssh_remotely
+
+from cmdb import app
 
 SQL_ENGINEROOM_LIST = "select id,idcname,area,ip_segment,machine_number from idc_detailed"
 SQL_ENGINEROOM_LIST_COLUMS = ('id', 'idcname', 'area','ip_segment', 'engineroom_number')
@@ -262,9 +262,9 @@ def log_import(filname):
     SQL_GEOIP_SAVE = 'insert into geoip(city_name, city_lat, city_lgt) values(%s, %s, %s)'
     log_list = []
     geoip_list = []
+    fhandler = None
+    geo_reader = None
     if os.path.exists(filname):
-        fhandler = None
-        geo_reader = None
         try:
             fhandler = open(filname, "r")
             geo_reader = geoip2.database.Reader(app.config['GeoIP'])
@@ -391,7 +391,7 @@ def log_code_dist():
 
 # 查询单位小时内各个状态码的数量，目前是假数据，因为不合逻辑，数据只是用来测试展示效果
 def log_code_time_dist():
-    sql2 = "select date_format(a_time, '%%Y-%%m-%%d %%H:00:00') as time, code, count(*) from log group by time, code limit 10;"
+    sql2 = "select code, count(*) as count, date_format(a_time, '%%Y-%%m-%%d %%H:00:00') as time from log group by time, code limit 100;"
     _, rt_list = dbutils.db_operating(sql2, True)
     legend = []
     xAxis = []
