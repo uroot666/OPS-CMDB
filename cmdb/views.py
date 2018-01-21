@@ -45,16 +45,14 @@ def login():
 @app.route('/users/')
 @decorator.login_required
 def users():
-    if session.get('user') is None:
-        return redirect('/')
-    user_all = model.User.get_list()   
-    return render_template("users.html", user_all=user_all)
+    return render_template("users.html")
 
-# 添加用户界面
-@app.route('/user/add/')
+# 返回所有用户信息
+@app.route('/users/list/')
 @decorator.login_required
-def user_add():
-    return render_template('user_create.html')
+def user_list():
+    user_all = model.User.get_list()
+    return json.dumps({'data':user_all})
 
 # 保存添加用户
 @app.route('/user/create/', methods=["POST"])
@@ -74,23 +72,19 @@ def user_create():
 
 
 # 删除用户
-@app.route('/user/delete/')
+@app.route('/user/delete/', methods=['POST'])
 @decorator.login_required
 def userdel():
-    id = int(request.args.get('id', ''))
+    id = int(request.form.get('id', ''))
     jud = model.User.delete_by_key(id, 'id')
-    user_all = model.User.get_list()
-    if jud:
-        return redirect('/users/')
-    else:
-        return render_template('users.html', error='error', user_all=user_all)
+    return json.dumps({'code':200})
 
-# 修改用户
-@app.route('/user/view/')
+# 返回需要修改的用户信息
+@app.route('/user/view/', methods=['POST'])
 @decorator.login_required
 def user_view():
-    user = model.User.get_user_by_id(request.args.get('id', 0))
-    return render_template('user_view.html', uid=user.get("uid"), username=user.get("username"), age=user.get("age"), email=user.get("email"))
+    user = model.User.get_user_by_id(request.form.get('uid', 0))
+    return json.dumps(user)
 
 # 保存修改的用户信息
 @app.route('/user/view_save/', methods=["POST"])
@@ -104,9 +98,9 @@ def user_view_save():
     ok = model.User.validate_user_modify(uid, username, age)
     if ok:
         user.user_edit_save()
-        return redirect('/users/')
+        return json.dumps({'code':200})
     else:
-        return render_template('user_view.html', uid=uid, username=username, age=age, email=email, error='error')
+        return json.dumps({'code':400})
 
 # 修改用户密码
 @app.route('/user/set/password/', methods=['POST'])
@@ -209,7 +203,7 @@ def asset_save():
     asset_save_value = model.asset_save(tuple(as_list[1:]))
     return json.dumps({"code" : 200})
 
-# 修改资产
+# 返回需要修改资产
 @app.route("/asset/view/")
 @decorator.login_required
 def asset_view():
@@ -239,12 +233,18 @@ def asset_delete():
 
 
 ####################### 机房信息管理 #########################
+# 机房页面
+@app.route("/idc/")
+@decorator.login_required
+def idc():
+    return render_template('idc_list.html')
+
 # 机房信息页面
-@app.route("/idc_list/")
+@app.route("/idc/list/", methods=['POST', 'GET'])
 @decorator.login_required
 def idc_list():
     engineroom_all = model.engineroom_list()
-    return render_template('idc_list.html', engineroom_all=engineroom_all)
+    return json.dumps({'data':engineroom_all})
 
 # 返回机房添加页面
 @app.route("/idc/add/")
@@ -267,37 +267,40 @@ def idc_add_save():
         return json.dumps({'code':200})
 
 # 返回机房修改页面
-@app.route("/idc/view/")
+@app.route("/idc/view/", methods=['POST'])
 @decorator.login_required
 def idc_view():
-    idcid = int(request.args.get('id'))
+    idcid = int(request.form.get('id'))
     idc_tails = model.idc_tails_get(idcid)
     idcname = idc_tails.get("idcname")
     area = idc_tails.get("area")
     ip_segment = idc_tails.get("ip_segment")
     machine_number = idc_tails.get("engineroom_number")
-    return render_template('idc_view.html', idcid=idcid, idcname=idcname, ip_segment=ip_segment, area=area, machine_number=machine_number)
+    rt_dict = {"idcid":idcid, "idcname":idcname, "ip_segment":ip_segment, "area":area, "machine_number":machine_number}
+    return json.dumps(rt_dict)
 
 # 将机房修改信息保存到数据库
-@app.route("/idc/view_save/")
+@app.route("/idc/view_save/", methods=['POST'])
 @decorator.login_required
 def idc_view_save():
-    idcid = int(request.args.get('idcid'))
-    idcname = request.args.get('idcname')
-    area = request.args.get('area')
-    ip_segment = request.args.get("ip_segment")
-    machine_number = int(request.args.get('machine_number'))
+    idcid = int(request.form.get('idcid'))
+    idcname = request.form.get('idcname')
+    area = request.form.get('area')
+    ip_segment = request.form.get("ip_segment")
+    machine_number = int(request.form.get('machine_number'))
     model.idc_view_save(idcid, idcname, area, ip_segment, machine_number)
-    return redirect("/idc_list/")
+    return json.dumps({'code':200})
 
 #删除机房
-@app.route("/idc/delete/")
+@app.route("/idc/delete/", methods=['POST'])
 @decorator.login_required
 def idc_delete():
-    id = request.args.get('id', '0')
+    id = request.form.get('id', '0')
     if re.match(r'\d+', id):
         model.idcroom_delete(int(id))
-        return redirect('/idc_list/')
+        return json.dumps({'code':200})
+    else:
+        return json.dumps({'code':400})
 
 ####################### agent http接口 ##########################
 # 将agent发回的数据存储到数据库

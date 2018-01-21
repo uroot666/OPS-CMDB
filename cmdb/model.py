@@ -51,7 +51,7 @@ class User(object):
     SQL_VALIDATE_LOGIN = 'select id,name from user where name = %s and password = %s'
     SQL_VALIDATE_LOGIN_COLUMS = ("id", "name")
     SQL_USER_LIST = 'select id, name, age, email from user'
-    SQL_USER_LIST_COLUMS = ("id", "username", "age", "email")
+    SQL_USER_LIST_COLUMS = ("uid", "username", "age", "email")
     SQL_GET_USER_BY_ID = 'select id,name,age,email from user where id = %s'
     SQL_GET_USER_BY_KEY = 'select id,name,age,email from user where {key} = %s'
     SQL_GET_USER_BY_KEY_COLUMS = ("uid", "username", "age", "email")
@@ -326,6 +326,7 @@ def get_asset():
         for key in ('time_on_shelves','over_guaranteed_date'):
             if asset[key]:
                 asset[key] = asset[key].strftime('%Y-%m-%d')
+        print('machine_room_id')
         asset['machine_room_id'] = idc_tails_get(asset['machine_room_id'])['idcname']
         assets.append(asset)
     return assets

@@ -11,6 +11,7 @@
 <link href="/static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
 <link href="/static/css/plugins/dataTables/dataTables.responsive.css" rel="stylesheet">
 <link href="/static/css/plugins/dataTables/dataTables.tableTools.min.css" rel="stylesheet">
+<link href="/static/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
 <link href="/static/css/animate.css" rel="stylesheet">
 <link href="/static/css/style.css" rel="stylesheet">
 {% endblock %}
@@ -30,7 +31,7 @@
         添加机房
     </button>
     <br>
-    <!-- Modal -->
+    <!-- 添加机房Modal -->
     <div class="modal fade" id="create_dailog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -69,7 +70,9 @@
                         <div class="col-sm-10"><input type="text" class="form-control">
                         </div>
                     </div>
-
+                    <div class="form-group">
+                            <input type="reset" name="reset" style="display: none;" />
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -79,8 +82,74 @@
         </div>
         </div>
     </div>
+    
+    <!-- 修改机房Modal -->
+    <div class="modal fade" id="edit_dailog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">修改机房</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal edit_form">
+                    <input type="hidden" name="idcid" value="" />
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">机房名称</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="idcname">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">机房地区</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="area">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">IP段</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="ip_segment">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">机器数量</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="machine_number">
+                        </div>
+                    </div>
+                    <div class="form-group"><label class="col-sm-2 control-label">机房简介</label>
+                        <div class="col-sm-10"><input type="text" class="form-control">
+                        </div>
+                    </div>
 
-    <table class="user table table-bordered table-condensed  table-striped">
+                </form>
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            <button type="button" class="btn btn-primary edit_btn">修改</button>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <table class="idc_list table table-bordered table-condensed  table-striped">
+        <thead>
+        <tr>
+            <!-- <th>ID</th> -->
+            <th>机房</th>
+            <th>位置</th>
+            <th>IP范围</th>
+            <th>机器数量</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        
+        </tbody>
+    </table>
+
+    <!-- <table class="idc_list table table-bordered table-condensed  table-striped">
         <thead>
         <tr>
             <th>ID</th>
@@ -104,7 +173,7 @@
         </tr>
         {% endfor %}
         </tbody>
-    </table>
+    </table> -->
 {% endblock %}
 
 {% block script %}
@@ -112,35 +181,129 @@
 <script src="/static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
 <script src="/static/js/plugins/dataTables/dataTables.responsive.js"></script>
 <script src="/static/js/plugins/dataTables/dataTables.tableTools.min.js"></script>
+<script src="/static/js/plugins/sweetalert/sweetalert.min.js"></script>
 {% endblock %}
 
 {% block js %}
 jQuery(document).ready(function(){
-    jQuery('.user').dataTable({
+    var table = jQuery('.idc_list').dataTable({
+        language: {
+            "sProcessing": "处理中...",
+            "sLengthMenu": "显示 _MENU_ 项结果",
+            "sZeroRecords": "没有匹配结果",
+            "sInfo": "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+            "sInfoEmpty": "显示第 0 至 0 项结果，共 0 项",
+            "sInfoFiltered": "(由 _MAX_ 项结果过滤)",
+            "sInfoPostFix": "",
+            "sSearch": "搜索:",
+            "sUrl": "",
+            "sEmptyTable": "表中数据为空",
+            "sLoadingRecords": "载入中...",
+            "sInfoThousands": ",",
+            "oPaginate": {
+                "sFirst": "首页",
+                "sPrevious": "上页",
+                "sNext": "下页",
+                "sLast": "末页"
+                },
+            "oAria": {
+                "sSortAscending": ": 以升序排列此列",
+                "sSortDescending": ": 以降序排列此列"
+                }
+            },
                 responsive: true,
                 "dom": 'T<"clear">lfrtip',
                 "tableTools": {
                     "sSwfPath":  "/static/js/plugins/dataTables/swf/copy_csv_xls_pdf.swf"
-                }
+                },
+                "ajax": "/idc/list/",
+                "columns": [
+                    { "data": "idcname" },
+                    { "data": "area" },
+                    { "data": "ip_segment"},
+                    { "data": "engineroom_number"},
+                    {"data": function(row) {
+                        var elements = [];
+                        elements.push("<a href='javascript:void(0)'><i class='fa fa-edit btn-edit'" 
+                            + "data-id=" + row['id'] + "></i></a>");
+                        elements.push("<a href='javascript:void(0)'><i class='fa fa-trash btn-delete'" 
+                            + "data-id=" + row['id'] + "></i></a>");
+                        return elements.join(" ")
+                    }}
+                    ]
             });
-    jQuery('.create_btn').on('click', function() {
-        jQuery.post('/idc/add_save/',
-                    jQuery('.create_form').serializeArray(),
-                    function(data){
-                        if(data['code'] === 200){
-                            console.log(data)
-                            window.location.reload();
-                        }
-                        else if(data['code'] === 400){
-                            alert('error');
-                        }
-                    },'json');
-            })
-            jQuery('.btn_delete').on('click', function() {
-                var url = '/idc/delete/?id=' + jQuery(this).data('id');
-                if(confirm('确定要删除吗?')){
-                    window.location.replace(url);
-                    }
-                })
+    //修改机房
+    jQuery('.idc_list').on('click', '.btn-edit', function() {
+        jQuery.post('/idc/view/',
+                {"id" : jQuery(this).data('id')},
+                function(response) {
+                    for (var key in response) {
+                        jQuery("[name=" + key + "]").val(response[key])
+                    };
+                    jQuery("#edit_dailog").modal("show")
+                },
+                'json');
+        });
+    //删除机房
+    jQuery('.idc_list').on('click', '.btn-delete', function() {
+        var url = '/idc/delete/' 
+        var id_dict = {"id":jQuery(this).data('id')};
+        swal({ 
+            title: "确定删除吗？", 
+            text: "你将无法恢复资产条目！", 
+            type: "warning",
+            showCancelButton: true, 
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "确定删除！", 
+            cancelButtonText: "取消删除！",
+            closeOnConfirm: false, 
+            closeOnCancel: false	
+            },
+            function(isConfirm){ 
+            if (isConfirm) { 
+                swal("删除！", "资产已经被删除。","success"); 
+                jQuery.post(url,id_dict);
+                jQuery("#edit-dailog").modal("hide");
+                table.api().ajax.reload();
+            } else { 
+                swal("取消！", "已经取消删除:)","error"); 
+            } 
+        });
+    });    
+    
+    //保存添加的机房
+    jQuery('.create_btn').on('click', function () {
+        var params = jQuery(".create_form").serializeArray();
+        console.log(params)
+        jQuery.post('/idc/add_save/', params, function(response) { 
+            if(response['code'] === 200){
+                jQuery("#create_dailog").modal("hide");
+                jQuery("input[type=reset]").trigger("click");
+                swal("添加成功！",'',"success")
+                table.api().ajax.reload();
+            }
+            else if(response['code'] === 400){
+                alert('error');
+            }
+        },
+        'json')
+    });
+
+    //保存修改的机房信息
+    jQuery('.edit_btn').on('click', function () {
+        var params = jQuery(".edit_form").serializeArray();
+        jQuery.post('/idc/view_save/', params, function(response) { 
+            if(response['code'] === 200){
+                jQuery("#edit_dailog").modal("hide");
+                swal("修改成功！",'',"success");
+                table.api().ajax.reload();
+            }
+            else if(response['code'] === 400){
+                alert('error');
+            }
+        },
+        'json')
+    });
+
 });
 {% endblock %}
