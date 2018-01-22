@@ -1,5 +1,7 @@
 #encoding: utf-8
 
+#用于远程执行命令以及上传数据
+
 import os
 import paramiko
 import traceback

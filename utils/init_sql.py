@@ -1,7 +1,3 @@
-#encoding=utf-8
-import pymysql
-from config import config
-
 # 创建数据库
 SQL_CREATE_CMDB = '''CREATE DATABASE cmdb'''
 
@@ -14,7 +10,7 @@ SQL_CREATE_USER = '''create table cmdb.user(
     age int
 )'''
 
-# 机房
+# 机房信息
 SQL_CREATE_IDC_DETAILED = '''create table cmdb.idc_detailed(
     id int primary key auto_increment,
     idcname varchar(40),
@@ -23,7 +19,7 @@ SQL_CREATE_IDC_DETAILED = '''create table cmdb.idc_detailed(
     machine_number int
 )'''
 
-# 资产
+# 资产信息
 SQL_CREATE_ASSET='''create table cmdb.asset (
     id int primary key auto_increment,
     sn varchar(125) not null unique key comment '资产编号',
@@ -75,7 +71,7 @@ SQL_LOG_ANALYSIS = '''create table log_analysis(
     count int comment '总次数'
 )engine=innodb default charset=utf8;'''
 
-# 
+# 存储日志内容
 SQL_LOG = '''create table log(
     id int primary key auto_increment,
     a_time datetime comment '访问时间',
@@ -85,7 +81,7 @@ SQL_LOG = '''create table log(
     city_name varchar(64) comment '城市名字'
 )engine=innodb default charset=utf8;'''
 
-#
+# 存储日志里面包含的城市名字及城市经纬度
 SQL_geoip = '''create table geoip(
     id int primary key auto_increment,
     city_name varchar(64) comment '城市名字',

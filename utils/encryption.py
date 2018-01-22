@@ -1,5 +1,7 @@
 #encoding: utf-8
 
+# 用于md5的函数
+
 import hashlib
 
 def md5_str(string):

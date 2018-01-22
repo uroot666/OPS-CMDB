@@ -191,7 +191,6 @@
             <tr>
                 <th>用户名</th>
                 <th>年龄</th>
-                <!-- <th>密码</th> -->
                 <th>邮箱</th>
                 <th>操作</th>
             </tr>
@@ -201,32 +200,6 @@
         </tbody>
     </table>
 
-    <!-- <table class="user-list table table-bordered table-condensed  table-striped">
-        <thead>
-            <tr>
-                <th>用户名</th>
-                <th>年龄</th>
-                <th>密码</th>
-                <th>邮箱</th>
-                <th>操作</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for user in user_all %}
-            <tr>
-                <td>{{user.get("username")}}</td>
-                <td>{{user.get("age")}}</td>
-                <td>******</td>  
-                <td>{{user.get("email")}}</td>          
-                <td>
-                    <a href="/user/view/?id={{user.get("id")}}">编辑</a> | 
-                    <a href="javascript:void(0);" class="btn_delete" data-id="{{user.get("id")}}">删除</a> |
-                    <a href="javascript:void(0);" class="user-set-password" data-id="{{user.get('id')}}">修改密码</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table> -->
 {% endblock %}
 {% block script %}
 <script src="/static/js/plugins/dataTables/jquery.dataTables.js"></script>
@@ -333,6 +306,7 @@ jQuery(document).ready(function(){
             if(response['code'] === 200){
                 jQuery("#edit_dailog").modal("hide");
                 swal("修改成功！",'',"success");
+                jQuery("input[type=reset]").trigger("click");
                 table.api().ajax.reload();
             }
             else if(response['code'] === 400){

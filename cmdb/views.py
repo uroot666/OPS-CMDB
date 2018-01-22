@@ -175,9 +175,6 @@ def logout():
 def test():
     return render_template('index.html')
 
-
-############################# 资产管理 #############################
-
 # 返回资产管理页面
 @app.route("/asset/")
 @decorator.login_required
@@ -231,8 +228,6 @@ def asset_delete():
         model.asset_delete(int(aid))
         return json.dumps({"code" : 200})
 
-
-####################### 机房信息管理 #########################
 # 机房页面
 @app.route("/idc/")
 @decorator.login_required
@@ -302,7 +297,6 @@ def idc_delete():
     else:
         return json.dumps({'code':400})
 
-####################### agent http接口 ##########################
 # 将agent发回的数据存储到数据库
 @app.route('/monitor/host/create/', methods=['POST'])
 @decorator.login_required

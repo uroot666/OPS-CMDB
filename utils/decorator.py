@@ -1,4 +1,5 @@
 # encoding: utf-8
+# 用于登陆验证的装饰器
 
 from functools import wraps
 import json

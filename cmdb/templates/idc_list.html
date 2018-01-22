@@ -296,6 +296,7 @@ jQuery(document).ready(function(){
             if(response['code'] === 200){
                 jQuery("#edit_dailog").modal("hide");
                 swal("修改成功！",'',"success");
+                jQuery("input[type=reset]").trigger("click");
                 table.api().ajax.reload();
             }
             else if(response['code'] === 400){

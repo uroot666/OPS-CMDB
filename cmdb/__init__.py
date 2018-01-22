@@ -1,5 +1,7 @@
 #encoding: utf-8
 
+# 初始化app
+
 from flask import Flask
 
 app = Flask(__name__)
