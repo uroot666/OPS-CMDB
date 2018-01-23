@@ -30,3 +30,17 @@
 <p>监测资源使用情况，使用http接口定时发送到server端</p>
 
 ## 文件结构
+CMDB/
+├── agent ---> agent文件
+├── cmdb  ---> 资产管理的app及模板文件
+|     ├── static
+|     ├── templates
+|  
+├── config ---> 配置文件存放
+├── restapi ---> 蓝图路由，agent使用
+├── utiles  ---> 邮件发送、ssh等被调用模块
+
+## 界面展示
+![ad](https://github.com/uroot666/cmdb/tree/master/temp/images/ad1.jpg)
+![ad](https://github.com/uroot666/cmdb/tree/master/temp/images/ad1.jpg)
+![ad](https://github.com/uroot666/cmdb/tree/master/temp/images/ad1.jpg)
