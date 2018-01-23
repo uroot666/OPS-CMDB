@@ -41,6 +41,6 @@ CMDB/
 ├── utiles  ---> 邮件发送、ssh等被调用模块
 
 ## 界面展示
-![ad](https://github.com/uroot666/cmdb/tree/master/temp/images/ad1.jpg)
-![ad](https://github.com/uroot666/cmdb/tree/master/temp/images/ad1.jpg)
-![ad](https://github.com/uroot666/cmdb/tree/master/temp/images/ad1.jpg)
+![ad](https://github.com/uroot666/cmdb/blob/master/temp/images/1.png)
+![ad](https://github.com/uroot666/cmdb/tree/master/temp/images/2.jpg)
+![ad](https://github.com/uroot666/cmdb/tree/master/temp/images/3.jpg)
