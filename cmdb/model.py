@@ -51,8 +51,8 @@ SQL_MONITOR_LOG_DELETE = "update alert set type=2,d_time=%s where id = %s"
 # 用户类
 class User(object):
     KEY = 'id'
-    SQL_VALIDATE_LOGIN = 'select id,name from user where name = %s and password = %s'
-    SQL_VALIDATE_LOGIN_COLUMS = ("id", "name")
+    SQL_VALIDATE_LOGIN = 'select id,name,admin from user where name = %s and password = %s'
+    SQL_VALIDATE_LOGIN_COLUMS = ("id", "name", "admin")
     SQL_USER_LIST = 'select id, name, age, email from user'
     SQL_USER_LIST_COLUMS = ("uid", "username", "age", "email")
     SQL_GET_USER_BY_ID = 'select id,name,age,email from user where id = %s'
@@ -373,6 +373,7 @@ def log_ip_distributed():
     log_ip_distributed_markLine = []
     log_ip_distributed_markPoint = []
     try:
+        print(app.config['GeoIP'])
         geo_reader = geoip2.database.Reader(app.config['GeoIP'])
         response = geo_reader.city(server_ip)
         server_name = response.city.names.get('zh-CN', '')

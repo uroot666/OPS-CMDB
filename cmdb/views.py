@@ -1,6 +1,8 @@
 #encoding=utf-8
 
 # from flask import Flask
+import time
+from flask import flash
 from flask import render_template
 from flask import request
 from flask import redirect
@@ -24,20 +26,21 @@ from utils import decorator
 @app.route('/')
 def index():
     if session.get('user'):
-        return redirect('/users/')
+        return render_template('/dashboard.html')
     return render_template('index.html')
 
 # 登录并跳转
 @app.route('/login/', methods=["POST"])
 def login():
     if session.get('user'):
-        return redirect('/users/')
+        return render_template('/dashboard.html')
     username = request.form.get('username', '')
     password = request.form.get('password', '')
     user = model.User.validate_login(username, password)
+    flash('登陆成功!', "success")
     if user:
         session['user'] = user
-        return redirect('/users/')
+        return render_template('/dashboard.html')
     else:
         return render_template('index.html', username=username,  error='用户或密码错误')
 
@@ -168,6 +171,7 @@ def download():
 @app.route('/logout/')
 def logout():
     session.clear()
+    flash('登出成功！', 'success')
     return redirect('/')
 
 # 返回静态资源的默认页面
@@ -324,7 +328,7 @@ def monitor_host_list():
 
 # 返回告警日志页面
 @app.route('/moitor/log/')
-@decorator.login_required
+@decorator.guest_login_required
 def moitor_log_index():
     if session.get('user') is None:
         return redirect('/')
@@ -332,14 +336,14 @@ def moitor_log_index():
 
 # 查询出告警日志，然会给告警页面
 @app.route('/moitor/log/list/')
-@decorator.login_required
+@decorator.guest_login_required
 def moitor_log_list():
     moitor_log = model.get_moitor_log()
     return json.dumps({"data" : moitor_log})
 
 # 删除告警日志
 @app.route('/moitor/log/delete/', methods = ['POST'])
-@decorator.login_required
+@decorator.guest_login_required
 def monitor_log_delete():
     id = request.form.get('id', '')
     req = model.monitor_log_delete(id)
@@ -357,12 +361,12 @@ def host_ssh():
     return json.dumps(status_dict)
 
 @app.route('/dashboard/')
-@decorator.login_required
+@decorator.guest_login_required
 def overview():
     return render_template('/dashboard.html')
 
 @app.route('/dashboard/data/')
-@decorator.login_required
+@decorator.guest_login_required
 def dashboard():
     log_code_dist_data, log_code_dist_legend = model.log_code_dist()
     log_code_column_legend,log_code_column_xAxis,log_code_column_series = model.log_code_time_dist()
@@ -378,6 +382,11 @@ def dashboard():
                         'log_ip_distributed_markLine' : log_ip_distributed_markLine,
                         'log_ip_distributed_markPoint' : log_ip_distributed_markPoint
                     }})
+
+# 返回404页面
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
 
 # if __name__ == '__main__':
 #     app.run(host='0.0.0.0', port=10000, debug=True)
