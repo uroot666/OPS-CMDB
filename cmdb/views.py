@@ -303,9 +303,10 @@ def idc_delete():
 
 # 将agent发回的数据存储到数据库
 @app.route('/monitor/host/create/', methods=['POST'])
-@decorator.login_required
+#@decorator.login_required
 def monitor_host_create():
     req = request.form
+    print(req)
     # ip = request.form.get('ip', '')
     # cpu = request.form.get('cpu', '')
     # mem = request.form.get('mem', '')

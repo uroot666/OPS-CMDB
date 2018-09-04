@@ -373,12 +373,14 @@ def log_ip_distributed():
     log_ip_distributed_markLine = []
     log_ip_distributed_markPoint = []
     try:
-        print(app.config['GeoIP'])
+        #print(app.config['GeoIP'])
         geo_reader = geoip2.database.Reader(app.config['GeoIP'])
         response = geo_reader.city(server_ip)
         server_name = response.city.names.get('zh-CN', '')
         server_lgt = response.location.longitude
         server_lat = response.location.latitude
+    except Exception as e:
+        return e
     finally:
         geo_reader.close()
         log_ip_distributed_geoCoord[server_name] = [server_lgt, server_lat]
@@ -388,6 +390,7 @@ def log_ip_distributed():
         log_ip_distributed_geoCoord[line[0]] = [line[1], line[2]]
     
     _, rt_list = dbutils.db_operating(SQL_log_ip_distributed2, True)
+    #print(_, rt_list)
     for line in rt_list:
         log_ip_distributed_markLine.append([{'name':line[0]}, {'name':server_name, 'value':line[1]}])
         log_ip_distributed_markPoint.append({'name':line[0], 'value':line[1]})

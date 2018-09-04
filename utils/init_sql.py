@@ -7,7 +7,7 @@ SQL_CREATE_USER = '''create table cmdb.user(
     name varchar(30),
     password varchar(40),
     email varchar(40),
-    age int，
+    age int,
     admin int comment '0表示guest,1表示管理员'
 )'''
 

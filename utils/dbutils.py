@@ -31,6 +31,7 @@ def list_db_insert(sql, if_fach,args=()):
         db = pymysql.connect(**config.config)
         cursor = db.cursor()
         cursor.executemany(sql, args)
+        #print(sql, args)
         if if_fach:
             rt_list = cursor.fetchall()
         else:

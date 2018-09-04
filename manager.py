@@ -10,4 +10,5 @@ app.config['basedir'] = os.path.abspath(os.path.dirname(__file__))
 app.config['GeoIP'] = os.path.abspath(os.path.join(os.path.dirname(__file__), 'utils/GeoLite_City/GeoLite2-City.mmdb'))
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=10000, debug=True)
+    print(app.url_map)
+    app.run(host='0.0.0.0', port=5000, debug=True)

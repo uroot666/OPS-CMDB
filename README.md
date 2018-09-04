@@ -45,3 +45,22 @@ utiles  ---> 邮件发送、ssh等被调用模块
 ![ad](https://github.com/uroot666/cmdb/blob/master/temp/images/2.png)
 
 ![ad](https://github.com/uroot666/cmdb/blob/master/temp/images/3.png)
+
+![ad](https://github.com/uroot666/cmdb/blob/master/temp/images/4.png)
+
+## 安装使用
+1. 依赖模块
+```
+pip install -r requitements.txt
+```
+
+2. 启动
+```
+python manager.py
+```
+
+3. 默认用户
+```
+user: root
+password: root
+```
