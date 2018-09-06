@@ -27,7 +27,7 @@ from utils import decorator
 def index():
     if session.get('user'):
         return render_template('/dashboard.html')
-    return render_template('index.html')
+    return render_template('login.html')
 
 # 登录并跳转
 @app.route('/login/', methods=["POST"])
@@ -42,7 +42,7 @@ def login():
         session['user'] = user
         return render_template('/dashboard.html')
     else:
-        return render_template('index.html', username=username,  error='用户或密码错误')
+        return render_template('login.html', username=username,  error='用户或密码错误')
 
 # 显示所有用户信息
 @app.route('/users/')
@@ -177,7 +177,7 @@ def logout():
 # 返回静态资源的默认页面
 @app.route("/static/")
 def test():
-    return render_template('index.html')
+    return render_template('login.html')
 
 # 返回资产管理页面
 @app.route("/asset/")
@@ -383,6 +383,17 @@ def dashboard():
                         'log_ip_distributed_markLine' : log_ip_distributed_markLine,
                         'log_ip_distributed_markPoint' : log_ip_distributed_markPoint
                     }})
+
+@app.route('/script/')
+@decorator.guest_login_required
+def script_index():
+    return render_template('/externall_service.html')
+
+@app.route('/script/whitelist/update', methods=['POST'])
+@decorator.guest_login_required
+def ip_whitelist_update():
+    print(request.form.get('ip_whitelist').split(','))
+    return json.dumps({'code': 200})
 
 # 返回404页面
 @app.errorhandler(404)

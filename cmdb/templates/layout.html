@@ -72,6 +72,14 @@
                     <li {% block nav_asset %}{% endblock %}><a href="/asset/">资产管理</a></li>
                 </ul>
             </li>
+            <li {% block nav_script %}{% endblock %} >
+                <a href="/script/"><i class="fa fa-cutlery"></i> <span class="nav-label">调用外部</span> <span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level collapse">
+                    <li {% block nav_small_function %}{% endblock %}><a href="/script/">小功能模块</a></li>
+                </ul>
+            </li>
+        </ul>
+
         </ul>
 
     </div>
@@ -128,13 +136,13 @@
 </div>
 
 </div>
-<div class="footer" >
+<!-- <div class="footer" >
     <div class="pull-right">
     </div>
     <div>
         <strong>Copyright</strong> Product By uroot &copy; 2017-2018
     </div>
-</div>
+</div> -->
 
 </div>
 </div>
