@@ -1,5 +1,5 @@
 # cmdb
-> python 3.6，windows环境下开发
+> python 3.7，windows环境下开发
 
 ## cmdb server
 1. web框架使用flask
