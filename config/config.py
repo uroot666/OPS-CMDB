@@ -3,7 +3,7 @@
 # 数据库连接信息
 config = {'host':"db.com", 
         "user":"cmdb", 
-        "password":"Liangbiao-1", 
+        "password":"password", 
         "database":"cmdb",
         "charset":"utf8"
 }
